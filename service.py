@@ -57,9 +57,9 @@ model = MultiPartitioningClassifier(
         "partitionings": {
             "shortnames": ["coarse", "middle", "fine"],
             "files": [
-                "../resources/s2_cells/cells_50_5000.csv",
-                "../resources/s2_cells/cells_50_2000.csv",
-                "../resources/s2_cells/cells_50_1000.csv",
+                "resources/s2_cells/cells_50_5000.csv",
+                "resources/s2_cells/cells_50_2000.csv",
+                "resources/s2_cells/cells_50_1000.csv",
             ],
         },
     },

@@ -1,12 +1,10 @@
 from __future__ import unicode_literals
 
-import glob
 import os
 import shutil
 from typing import Any, Dict, Tuple
 
 import youtube_dl
-from IPython.display import Image, display
 from Katna.config import Video as VideoConfig
 from Katna.video import Video
 from Katna.writer import KeyFrameDiskWriter
@@ -90,10 +88,3 @@ def capture_frames(video_file_path: str, info_dict: Dict[str, Any]) -> str:
         raise ValueError(f"Error capturing the frames: {e}")
 
     return frames_directory
-
-
-def display_video_frames(frames_directory: str):
-    frames = glob.glob(f"{frames_directory}/*.jpeg")
-
-    for frame in frames:
-        display(Image(filename=frame, width=200, height=100))
