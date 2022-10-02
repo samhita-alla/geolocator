@@ -1,0 +1,11 @@
+katna
+youtube_dl
+pytorch-lightning
+s2sphere
+scikit-learn
+gradio
+bentoml
+onnx
+onnxruntime
+requests_toolbelt
+opentelemetry-sdk==1.12.0
