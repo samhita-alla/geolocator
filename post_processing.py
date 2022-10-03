@@ -87,7 +87,8 @@ def generate_prediction_logit(
     best_pred = inference_df.sort_values(by=['pred_logit'], ascending=False).loc[0]
     latitude, longitude = best_pred['pred_lat'], best_pred['pred_lng']
     logging.info(f"Latitude: {latitude}, Longitutde: {longitude}")
-    
+    print(f"Latitude: {latitude}, Longitutde: {longitude}")
+
     # get location
     location = get_location(latitude=latitude, longitude=longitude)
     return location 
