@@ -138,21 +138,26 @@ def predict(data: str, metadata: str) -> str:
         yhats = [torch.from_numpy(numpy_array) for numpy_array in yhats_numpy]
 
         # post-processing logic
+        # logits courtesy: @yiyixuxu
         yhats, hierarchy_preds = model._multi_crop_inference_helper(
             cur_batch_size, ncrops, yhats
         )
-        pred_classes, pred_latitudes, pred_longitudes = model.inference_helper(
-            yhats, hierarchy_preds
-        )
+        (
+            pred_classes,
+            pred_latitudes,
+            pred_longitudes,
+            pred_logits,
+        ) = model.inference_helper(yhats, hierarchy_preds)
 
         img_paths = meta_batch["img_path"]
 
         for p_key in pred_classes.keys():
-            for img_path, pred_class, pred_lat, pred_lng in zip(
+            for img_path, pred_class, pred_lat, pred_lng, pred_logit in zip(
                 img_paths,
                 pred_classes[p_key].cpu().numpy(),
                 pred_latitudes[p_key].cpu().numpy(),
                 pred_longitudes[p_key].cpu().numpy(),
+                pred_logits[p_key].cpu().numpy(),
             ):
                 rows.append(
                     {
@@ -161,6 +166,7 @@ def predict(data: str, metadata: str) -> str:
                         "pred_class": pred_class,
                         "pred_lat": pred_lat,
                         "pred_lng": pred_lng,
+                        "pred_logit": pred_logit,
                     }
                 )
 
