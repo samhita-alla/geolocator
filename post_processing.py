@@ -1,5 +1,5 @@
 import logging
-from typing import List
+from typing import List, Tuple
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -50,12 +50,7 @@ def get_location(latitude: float, longitude: float) -> str:
     return location.address
 
 
-def generate_prediction(
-    inference_df: pd.DataFrame,
-) -> str:
-    # data engineering
-    lats_and_longs = data_engineering(inference_df=inference_df)
-
+def generate_prediction_helper(lats_and_longs: List[List[float]]) -> Tuple[str, float, float]:
     labels = dbscan_clustering(lats_and_longs=lats_and_longs)
 
     # find the dense cluster
@@ -75,4 +70,12 @@ def generate_prediction(
     # get location
     location = get_location(latitude=latitude, longitude=longitude)
 
+    return location, latitude, longitude
+
+
+def generate_prediction(
+    inference_df: pd.DataFrame,
+) -> str:
+    lats_and_longs = data_engineering(inference_df=inference_df)
+    location, *_ = generate_prediction_helper(lats_and_longs=lats_and_longs)
     return location

@@ -1,2 +1,4 @@
 .python-version
 GeoEstimation/
+*.sh
+__pycache__/

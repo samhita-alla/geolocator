@@ -10,10 +10,8 @@ from Katna.video import Video
 from Katna.writer import KeyFrameDiskWriter
 
 NUMBER_OF_FRAMES = 20
-
 MAX_FILESIZE = 10000000
-image_dir = None
-image_parent_dir = "geolocator-images"
+SELECTED_FRAMES_DIRECTORY = "selected-frames"
 
 
 def sort_key(key):
@@ -74,7 +72,7 @@ def extract_youtube_video(url: str) -> Tuple[str, Dict[str, Any]]:
 
 def capture_frames(video_file_path: str, info_dict: Dict[str, Any]) -> str:
     # create a directory to store video frames
-    frames_directory = f"selected-frames/{info_dict['id']}"
+    frames_directory = f"{SELECTED_FRAMES_DIRECTORY}/{info_dict['id']}"
     shutil.rmtree(frames_directory, ignore_errors=True)
     os.makedirs(frames_directory, exist_ok=True)
     diskwriter = KeyFrameDiskWriter(location=frames_directory)

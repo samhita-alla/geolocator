@@ -15,13 +15,15 @@ from classification.train_base import MultiPartitioningClassifier
 from post_processing import generate_prediction
 from pre_processing import capture_frames, extract_youtube_video
 
-image_parent_dir = "geolocator-images"
+IMAGE_PARENT_DIR = "geolocator-images"
 ONNX_MODEL = "onnx_geolocator"
 VERSION = "latest"
+BATCH_SIZE = 13
+NUM_OF_WORKERS = 0
 
 
 def create_image_dir(img_file: str) -> str:
-    image_dir = os.path.join(image_parent_dir, os.path.basename(img_file).split(".")[0])
+    image_dir = os.path.join(IMAGE_PARENT_DIR, os.path.basename(img_file).split(".")[0])
 
     # clear the image directory before filling it up
     shutil.rmtree(image_dir, ignore_errors=True)
@@ -115,9 +117,9 @@ def predict(data: str, metadata: str) -> str:
 
     dataloader = torch.utils.data.DataLoader(
         FiveCropImageDataset(meta_csv=None, image_dir=image_dir),
-        batch_size=13,
+        batch_size=BATCH_SIZE,
         shuffle=False,
-        num_workers=0,
+        num_workers=NUM_OF_WORKERS,
     )
 
     rows = []
@@ -128,8 +130,6 @@ def predict(data: str, metadata: str) -> str:
 
         # reshape crop dimension to batch
         images = torch.reshape(images, (cur_batch_size * ncrops, *images.shape[2:]))
-
-        print(images.shape)
 
         # fetch predictions
         yhats_numpy = geolocator_runner.fetch_multiple_onnx_outputs.run(images)
