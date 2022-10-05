@@ -4,8 +4,13 @@ pytorch-lightning
 s2sphere
 scikit-learn
 gradio
-bentoml
+bentoml[io-image]
 onnx
 onnxruntime
 requests_toolbelt
+torchvision
+msgpack
+plotly
+geopy
 opentelemetry-sdk==1.12.0
+Pillow
