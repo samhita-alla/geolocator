@@ -89,6 +89,7 @@ def get_location(latitude: float, longitude: float) -> str:
     return location.address
 
 
+
 def generate_prediction_logit(
     inference_df: pd.DataFrame,
 ) -> Tuple[str, float, float]:
