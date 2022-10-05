@@ -50,7 +50,9 @@ def get_location(latitude: float, longitude: float) -> str:
     return location.address
 
 
-def generate_prediction_helper(lats_and_longs: List[List[float]]) -> Tuple[str, float, float]:
+def generate_prediction_helper(
+    lats_and_longs: List[List[float]],
+) -> Tuple[str, float, float]:
     labels = dbscan_clustering(lats_and_longs=lats_and_longs)
 
     # find the dense cluster
@@ -80,16 +82,19 @@ def generate_prediction(
     location, *_ = generate_prediction_helper(lats_and_longs=lats_and_longs)
     return location
 
+
 def generate_prediction_logit(
     inference_df: pd.DataFrame,
-)-> str:
-     # get the most confident prediction (highest pred_logit)
-    best_pred = inference_df.sort_values(by=['pred_logit'], ascending=False).reset_index().loc[0]
-    latitude, longitude = best_pred['pred_lat'], best_pred['pred_lng']
+) -> Tuple[str, float, float]:
+    # get the most confident prediction (highest pred_logit)
+    best_pred = (
+        inference_df.sort_values(by=["pred_logit"], ascending=False)
+        .reset_index()
+        .loc[0]
+    )
+    latitude, longitude = best_pred["pred_lat"], best_pred["pred_lng"]
     logging.info(f"Latitude: {latitude}, Longitutde: {longitude}")
 
     # get location
     location = get_location(latitude=latitude, longitude=longitude)
-    return location 
-
-
+    return location, latitude, longitude

@@ -8,4 +8,8 @@ bentoml
 onnx
 onnxruntime
 requests_toolbelt
+torchvision
+msgpack
+plotly
+geopy
 opentelemetry-sdk==1.12.0

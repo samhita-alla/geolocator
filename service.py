@@ -1,3 +1,6 @@
+"""
+Bento Service Definition
+"""
 import os
 import shutil
 from pathlib import Path
@@ -12,7 +15,7 @@ from tqdm.auto import tqdm
 
 from classification.dataset import FiveCropImageDataset
 from classification.train_base import MultiPartitioningClassifier
-from post_processing import generate_prediction
+from post_processing import generate_prediction_logit
 from pre_processing import capture_frames, extract_youtube_video
 
 IMAGE_PARENT_DIR = "geolocator-images"
@@ -174,4 +177,5 @@ def predict(data: str, metadata: str) -> str:
     geolocator_df.set_index(keys=["img_id", "p_key"], inplace=True)
 
     # get the location
-    return generate_prediction(inference_df=geolocator_df)
+    location, *_ = generate_prediction_logit(inference_df=geolocator_df)
+    return location
