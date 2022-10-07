@@ -3,24 +3,23 @@ Bento Service Definition
 """
 from __future__ import annotations
 
+import io
 import os
 import shutil
-from pathlib import Path
-from typing import Any, Dict, List, TYPE_CHECKING
-
 import uuid
-import io
+from pathlib import Path
+from typing import TYPE_CHECKING, Any, Dict, List
+
 import bentoml
 import numpy as np
 import pandas as pd
 import torch
-from bentoml.io import Text, File, Image
-from tqdm.auto import tqdm
-
+from bentoml.io import File, Image, Text
 from classification.dataset import FiveCropImageDataset
 from classification.train_base import MultiPartitioningClassifier
 from post_processing import generate_prediction_logit
 from pre_processing import capture_frames, extract_youtube_video
+from tqdm.auto import tqdm
 
 if TYPE_CHECKING:
     from PIL.Image import Image as PILImage

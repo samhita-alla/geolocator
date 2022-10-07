@@ -1,11 +1,9 @@
 import logging
 from typing import Tuple
 
-
 import pandas as pd
 from geopy.extra.rate_limiter import RateLimiter
 from geopy.geocoders import Nominatim
-
 
 """
 from typing import List
@@ -87,7 +85,6 @@ def get_location(latitude: float, longitude: float) -> str:
     geocode = RateLimiter(geolocator.geocode, min_delay_seconds=1)
     location = geocode(f"{latitude},{longitude}", language="en")
     return location.address
-
 
 
 def generate_prediction_logit(

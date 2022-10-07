@@ -54,6 +54,8 @@ cffi==1.15.1
     # via
     #   cryptography
     #   pynacl
+cfgv==3.3.1
+    # via pre-commit
 charset-normalizer==2.1.1
     # via
     #   aiohttp
@@ -84,6 +86,8 @@ deepmerge==1.0.1
     # via bentoml
 deprecated==1.2.13
     # via opentelemetry-api
+distlib==0.3.6
+    # via virtualenv
 docker==5.0.3
     # via bentoctl
 exceptiongroup==1.0.0rc9
@@ -94,6 +98,8 @@ ffmpy==0.3.0
     # via
     #   gradio
     #   katna
+filelock==3.8.0
+    # via virtualenv
 flatbuffers==22.9.24
     # via onnxruntime
 fonttools==4.37.4
@@ -135,6 +141,8 @@ httpx==0.23.0
     # via gradio
 humanfriendly==10.0
     # via coloredlogs
+identify==2.5.6
+    # via pre-commit
 idna==3.4
     # via
     #   anyio
@@ -187,6 +195,8 @@ multidict==6.0.2
     #   yarl
 networkx==2.8.7
     # via scikit-image
+nodeenv==1.7.0
+    # via pre-commit
 numpy==1.23.3
     # via
     #   bentoml
@@ -278,7 +288,11 @@ pillow==9.2.0
     #   torchvision
 pip-tools==6.9.0
     # via bentoml
+platformdirs==2.5.2
+    # via virtualenv
 plotly==5.10.0
+    # via -r requirements.in
+pre-commit==2.20.0
     # via -r requirements.in
 prometheus-client==0.14.1
     # via bentoml
@@ -342,6 +356,7 @@ pyyaml==6.0
     #   bentoctl
     #   bentoml
     #   gradio
+    #   pre-commit
     #   pytorch-lightning
 pyzmq==24.0.1
     # via circus
@@ -417,6 +432,8 @@ threadpoolctl==3.1.0
     # via scikit-learn
 tifffile==2022.8.12
     # via scikit-image
+toml==0.10.2
+    # via pre-commit
 tomli==2.0.1
     # via
     #   build
@@ -451,6 +468,8 @@ uvicorn==0.18.3
     # via
     #   bentoml
     #   gradio
+virtualenv==20.16.5
+    # via pre-commit
 watchfiles==0.17.0
     # via bentoml
 websocket-client==1.4.1

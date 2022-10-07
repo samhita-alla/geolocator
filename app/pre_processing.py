@@ -1,7 +1,6 @@
 from __future__ import unicode_literals
 
 import os
-import shutil
 from typing import Any, Dict, Tuple
 
 import youtube_dl

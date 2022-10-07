@@ -67,7 +67,7 @@ After generating a Bento model, run the following commands in the `GeoEstimation
 
 - ``bentoctl operator install aws-lambda``
 - ``bentoctl init``
-- 
+-
 
 ## Gradio
 
