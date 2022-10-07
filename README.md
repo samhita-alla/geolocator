@@ -65,6 +65,10 @@ After generating a Bento model, run the following commands in the `GeoEstimation
 ## AWS Lambda
 
 
+- ``bentoctl operator install aws-lambda``
+- ``bentoctl init``
+- 
+
 ## Gradio
 
 A user may want to input an image, a video file, or a YouTube link.

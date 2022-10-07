@@ -14,7 +14,7 @@ import bentoml
 import numpy as np
 import pandas as pd
 import torch
-from bentoml.io import Multipart, Text, File, Image
+from bentoml.io import Text, File, Image
 from tqdm.auto import tqdm
 
 from classification.dataset import FiveCropImageDataset
@@ -36,8 +36,6 @@ def create_image_dir(img_data: Image) -> str:
     unique_string = str(uuid.uuid4())
     image_dir = os.path.join(IMAGE_PARENT_DIR, os.path.basename(unique_string))
 
-    # clear the image directory before filling it up
-    shutil.rmtree(image_dir, ignore_errors=True)
     os.makedirs(image_dir)
     img_data.save(
         f"{image_dir}/{unique_string}.{(img_data.format).lower()}",
@@ -120,18 +118,9 @@ geolocator_runner = bentoml.Runner(
     models=[bentoml.onnx.get(f"{ONNX_MODEL}:{VERSION}")],
 )
 svc = bentoml.Service("geolocator", runners=[geolocator_runner])
-input_spec = Multipart(url=Text(), image=Image(), video=File(), metadata=Text())
 
 
-@svc.api(input=input_spec, output=Text())
-def predict(url: str, image: PILImage, video: io.BytesIO[Any], metadata: str) -> str:
-    if metadata == "image":
-        image_dir = img_processor(img_data=image)
-    elif metadata == "video":
-        image_dir = video_processor(video_file=video)
-    elif metadata == "url":
-        image_dir = url_processor(url=url)
-
+def predict_helper(image_dir: str) -> str:
     dataloader = torch.utils.data.DataLoader(
         FiveCropImageDataset(meta_csv=None, image_dir=image_dir),
         batch_size=BATCH_SIZE,
@@ -192,4 +181,25 @@ def predict(url: str, image: PILImage, video: io.BytesIO[Any], metadata: str) ->
 
     # get the location
     location, *_ = generate_prediction_logit(inference_df=geolocator_df)
+
+    # clear up the image directory -- memory optimization
+    shutil.rmtree(image_dir, ignore_errors=True)
     return location
+
+
+@svc.api(input=Image(), output=Text(), route="predict-image")
+def predict_image(image: PILImage) -> str:
+    image_dir = img_processor(img_data=image)
+    return predict_helper(image_dir=image_dir)
+
+
+@svc.api(input=File(), output=Text(), route="predict-video")
+def predict_video(video: io.BytesIO[Any]) -> str:
+    image_dir = video_processor(video_file=video)
+    return predict_helper(image_dir=image_dir)
+
+
+@svc.api(input=Text(), output=Text(), route="predict-url")
+def predict_url(url: str) -> str:
+    image_dir = url_processor(url=url)
+    return predict_helper(image_dir=image_dir)

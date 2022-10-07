@@ -73,7 +73,6 @@ def extract_youtube_video(url: str) -> Tuple[str, Dict[str, Any]]:
 def capture_frames(video_file_path: str, info_dict: Dict[str, Any]) -> str:
     # create a directory to store video frames
     frames_directory = f"{SELECTED_FRAMES_DIRECTORY}/{info_dict['id']}"
-    shutil.rmtree(frames_directory, ignore_errors=True)
     os.makedirs(frames_directory, exist_ok=True)
     diskwriter = KeyFrameDiskWriter(location=frames_directory)
 

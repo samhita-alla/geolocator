@@ -7,12 +7,12 @@ import requests
 
 image_file_name = "test_data/santorini-island-greece-santorini-island-greece-oia-town-traditional-white-houses-churches-blue-domes-over-caldera-146011399.jpg"
 video_file_name = "test_data/newyork_video.mp4"
-
+url = "https://2ek4n4vss0.execute-api.us-east-2.amazonaws.com/"
 
 # image
 print(
     requests.post(
-        "http://127.0.0.1:3000/predict-image",
+        f"{url}predict-image",
         files={
             "image": (
                 image_file_name,
@@ -26,7 +26,7 @@ print(
 # video
 print(
     requests.post(
-        "http://127.0.0.1:3000/predict-video",
+        f"{url}predict-video",
         files={
             "video": (
                 video_file_name,
@@ -40,7 +40,7 @@ print(
 # url
 print(
     requests.post(
-        "http://127.0.0.1:3000/predict-url",
+        f"{url}predict-url",
         headers={"content-type": "text/plain"},
         data="https://www.youtube.com/watch?v=ADt1LnbL2HI",
     ).text
