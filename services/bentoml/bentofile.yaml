@@ -1,0 +1,36 @@
+docker:
+    distro: debian
+    python_version: "3.8"
+    system_packages:
+      - libblas-dev
+      - liblapack-dev
+      - gfortran
+      - ffmpeg
+      - libsm6
+      - youtube-dl
+      - git
+service: "service:svc"  # Same as the argument passed to `bentoml serve`
+labels:
+   owner: fsdl-geolocation-team
+   stage: dev
+include:
+- "*.py"  # A pattern for matching which files to include in the bento
+- "resources/s2_cells/*.csv"
+python:
+   packages:  # Additional pip packages required by the service
+   - torch
+   - pandas
+   - git+https://github.com/samhita-alla/katna.git#egg=katna
+   - youtube_dl
+   - pytorch-lightning
+   - s2sphere
+   - scikit-learn
+   - onnx
+   - torchvision
+   - msgpack
+   - matplotlib
+   - plotly
+   - geopy
+   - onnxruntime
+   - Pillow
+   - bentoml[io-image]
