@@ -84,7 +84,10 @@ def get_location(latitude: float, longitude: float) -> str:
     geolocator = Nominatim(user_agent="geolocater")
     geocode = RateLimiter(geolocator.geocode, min_delay_seconds=1)
     location = geocode(f"{latitude},{longitude}", language="en")
-    return location.address
+    try:
+        return location.address
+    except Exception as e:
+        return "Location not found"
 
 
 def generate_prediction_logit(
@@ -96,9 +99,17 @@ def generate_prediction_logit(
         .reset_index()
         .loc[0]
     )
+    
     latitude, longitude = best_pred["pred_lat"], best_pred["pred_lng"]
     logging.info(f"Latitude: {latitude}, Longitutde: {longitude}")
 
+    #hard coding for Gradio Dev
+    latitude, longitude = 37.719, 122.258
+
     # get location
-    location = get_location(latitude=latitude, longitude=longitude)
+    ## TODO: EXCEPTION HANDLING
+    try:
+        location = get_location(latitude=latitude, longitude=longitude)
+    except Exception as e:
+        location = "Location Not Found"
     return location, latitude, longitude
