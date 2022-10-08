@@ -1,3 +1,9 @@
+#GantryImageToTextLogger.py
+
+"""
+class to handle flagging in gradio to gantry
+"""
+
 import os
 from typing import List, Optional, Union
 
@@ -61,14 +67,12 @@ class GantryImageToTextLogger(gr.FlaggingCallback):
         self.bucket = get_or_create_bucket(flagging_dir)
         enable_bucket_versioning(self.bucket)
         add_access_policy(self.bucket)
-        self.image_component_idx, self.text_component_idx, self.text_component2_idx, self.video_component_idx = self._find_image_video_and_text_components(
+        self.image_component_idx, self.text_component_idx, self.text_component2_idx = self._find_image_video_and_text_components(
             components
         )
 
     def flag(self, flag_data, flag_option=None, flag_index=None, username=None) -> int:
         """Sends flagged outputs and feedback to Gantry and image inputs to S3."""
-
-        display("Flagging response sent to backend!!!")
 
         image = flag_data[self.image_component_idx]
         text = flag_data[self.text_component_idx]
@@ -80,6 +84,7 @@ class GantryImageToTextLogger(gr.FlaggingCallback):
 
         data_type, image_buffer = read_b64_string(image, return_data_type=True)
         image_url = self._to_s3(image_buffer.read(), filetype=data_type)
+
         self._to_gantry(
             input_image_url=image_url,
             pred_location=text,
@@ -87,6 +92,8 @@ class GantryImageToTextLogger(gr.FlaggingCallback):
             feedback=feedback,
         )
         self._counter += 1
+        display("Flagging response has been succesfully sent to gantry.io!")
+
 
         return self._counter
 
@@ -114,43 +121,18 @@ class GantryImageToTextLogger(gr.FlaggingCallback):
         return s3_uri
 
     def _find_image_video_and_text_components(self, components: List[Component]):
-        image_component_idx, text_component_idx, text_component2_idx, video_component_idx = (
-            None,
-            0, #TODO: Hard coded 
-            0, #TODO: Hard coded
-            None,
-        )
+        """
+        Manual indexing of images and text components
+        """
 
-        for idx, component in enumerate(components):
-            if isinstance(component, (gr.inputs.Image, gr.components.Image)):
-                image_component_idx = idx
-            elif isinstance(component, (gr.templates.Text, gr.components.Textbox)):
-                text_component_idx = idx
-            elif (
-                isinstance(component, (gr.templates.Text, gr.components.Textbox))
-                and text_component_idx is not None
-            ):
-                text_component_idx2 = idx
-            # elif isinstance(component, (gr.inputs.Video, gr.components.Video)):
-            #     video_component_idx = idx
-
-        if image_component_idx is None:
-            raise RuntimeError(
-                f"No image input found in gradio interface with components {components}"
-            )
-        elif text_component_idx is None:
-            raise RuntimeError(
-                f"No text output found in gradio interface with components {components}"
-            )
-
-        # elif video_component_idx is None:
-        # raise RuntimeError(f"No video input found in gradio interface with components {components}")
+        image_component_idx = 0
+        text_component_idx = 1
+        text_component2_idx = 2
 
         return (
             image_component_idx,
             text_component_idx,
             text_component2_idx,
-            video_component_idx,
         )
 
 
