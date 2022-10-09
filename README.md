@@ -64,10 +64,20 @@ After generating a Bento model, run the following commands in the `GeoEstimation
 
 ## AWS Lambda
 
+To generate a publicly-accessible API endpoint, deploy the bento to AWS Lambda.
+Run the following commands in the `services/bentoml` directory:
 
-- ``bentoctl operator install aws-lambda``
-- ``bentoctl init``
--
+- `bentoctl operator install aws-lambda`
+- `bentoctl init`
+- `bentoctl build -b geolocator:<version> -f deployment_config.yaml`
+- `terraform init`
+- `terraform apply -var-file=bentoctl.tfvars -auto-approve`
+
+To update the deployment:
+
+- `bentoml build` in `GeoEstimation`
+- `bentoctl build -b geolocator:<version> -f deployment_config.yaml` in `bentoml`
+- `bentoctl apply -f deployment_config.yaml`
 
 ## Gradio
 

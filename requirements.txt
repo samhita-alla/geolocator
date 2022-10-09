@@ -318,6 +318,7 @@ pycryptodome==3.15.0
     # via gradio
 pydantic==1.10.2
     # via
+    #   -r requirements.in
     #   fastapi
     #   gradio
 pydeprecate==0.3.2

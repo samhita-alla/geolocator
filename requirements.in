@@ -16,3 +16,4 @@ opentelemetry-semantic-conventions==0.33b0
 Pillow
 bentoctl
 pre-commit
+pydantic
