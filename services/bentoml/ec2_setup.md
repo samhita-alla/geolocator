@@ -9,9 +9,9 @@
 - `docker info`
 
 ## Bento Server
-- In Security group, change inbound rule protocol to TCP
+- In Security group, add a TCP inbound rule protocol
 - `docker pull ghcr.io/samhita-alla/bento:0.0.1`
 - `docker run -p 80:3000 ghcr.io/samhita-alla/bento:0.0.1`
 
 ## Test API
-- `python services/bentoml/test_api.py --url http://13.59.21.71/`
+- `python services/bentoml/test_api.py --url <EC2_PUBLIC_IP>`

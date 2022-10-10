@@ -4,7 +4,11 @@ An end-to-end ML application built on top of [GeoEstimation](https://github.com/
 
 Team: [@yiyixuxu](https://github.com/yiyixuxu), [@WinsonTruong](https://github.com/WinsonTruong), [@dayweek](https://github.com/dayweek), [@samhita-alla](https://github.com/samhita-alla)
 
-TODO: include a screencast of the application
+![](https://user-images.githubusercontent.com/27777173/194872168-41ab2f35-bc92-414f-b55d-c0fd7ac39477.png)
+
+![](https://user-images.githubusercontent.com/27777173/194872185-e658c3b8-4d55-44b4-9214-bb99a7bb8328.png)
+
+![](https://user-images.githubusercontent.com/27777173/194872209-e7dff2d7-61f9-4ce1-b46d-7fd853b7f5ab.png)
 
 ## 🥞 Stack
 
@@ -60,28 +64,16 @@ After generating a Bento model, run the following commands in the `GeoEstimation
 - `bentoml build`
 - `bentoml containerize geolocator:<version>`
 - `docker run -it --rm -p 3000:3000 geolocator:<version> serve --production`
-- `python test_api.py` (Test!)
+- `python test_api.py --url http://127.0.0.1:3000` (Test!)
 
-## AWS Lambda
+## AWS EC2
 
-To generate a publicly-accessible API endpoint, deploy the bento to AWS Lambda.
-Run the following commands in the `services/bentoml` directory:
-
-- `bentoctl operator install aws-lambda`
-- `bentoctl init`
-- `bentoctl build -b geolocator:<version> -f deployment_config.yaml`
-- `terraform init`
-- `terraform apply -var-file=bentoctl.tfvars -auto-approve`
-
-To update the deployment:
-
-- `bentoml build` in `GeoEstimation`
-- `bentoctl build -b geolocator:<version> -f deployment_config.yaml` in `bentoml`
-- `bentoctl apply -f deployment_config.yaml`
+To generate a publicly-accessible API endpoint, deploy the bento to AWS EC2 by following the steps outlined in [ec2_setup.md](services/bentoml/ec2_setup.md).
 
 ## Gradio
 
-A user may want to input an image, a video file, or a YouTube link.
-The Gradio interface has been designed such that either of these can be provided.
+Gradio code can be found in the [services/gradio](services/gradio/) directory.
 
 ## Gantry
+
+...

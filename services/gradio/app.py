@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-URL = "http://13.59.21.71/"
+URL = os.getenv("ENDPOINT")
 
 
 def get_plotly_graph(
