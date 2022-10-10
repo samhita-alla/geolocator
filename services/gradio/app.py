@@ -1,3 +1,4 @@
+import json
 import mimetypes
 import os
 from typing import Tuple
@@ -7,8 +8,11 @@ import pandas as pd
 import plotly
 import plotly.express as px
 import requests
+from dotenv import load_dotenv
 
-URL = ""
+load_dotenv()
+
+URL = "http://13.59.21.71/"
 
 
 def get_plotly_graph(
@@ -33,60 +37,78 @@ def get_plotly_graph(
 
 
 def image_gradio(img_file: str) -> Tuple[str, plotly.graph_objects.Figure]:
-    location, latitude, longitude = requests.post(
-        f"{URL}predict-image",
-        files={
-            "image": (
-                img_file,
-                open(img_file, "rb"),
-                mimetypes.guess_type(img_file)[0],
-            )
-        },
-    ).text
+    data = json.loads(
+        requests.post(
+            f"{URL}predict-image",
+            files={
+                "image": (
+                    img_file,
+                    open(img_file, "rb"),
+                    mimetypes.guess_type(img_file)[0],
+                )
+            },
+        ).text
+    )
 
-    return location, get_plotly_graph(latitude=latitude, longitude=longitude)
+    location = data["location"]
+    return data["location"], get_plotly_graph(
+        latitude=data["latitude"], longitude=data["longitude"], location=location
+    )
 
 
 def video_gradio(video_file: str) -> Tuple[str, plotly.graph_objects.Figure]:
-    location, latitude, longitude = requests.post(
-        f"{URL}predict-video",
-        files={
-            "video": (
-                video_file,
-                open(video_file, "rb"),
-                "application/octet-stream",
-            )
-        },
-    ).text
+    data = json.loads(
+        requests.post(
+            f"{URL}predict-video",
+            files={
+                "video": (
+                    video_file,
+                    open(video_file, "rb"),
+                    "application/octet-stream",
+                )
+            },
+        ).text
+    )
 
-    return location, get_plotly_graph(latitude=latitude, longitude=longitude)
+    location = data["location"]
+    return location, get_plotly_graph(
+        latitude=data["latitude"], longitude=data["longitude"], location=location
+    )
 
 
 def url_gradio(url: str) -> Tuple[str, plotly.graph_objects.Figure]:
-    location, latitude, longitude = requests.post(
-        f"{URL}predict-url",
-        headers={"content-type": "text/plain"},
-        data=url,
-    ).text
+    data = json.loads(
+        requests.post(
+            f"{URL}predict-url",
+            headers={"content-type": "text/plain"},
+            data=url,
+        ).text
+    )
 
-    return location, get_plotly_graph(latitude=latitude, longitude=longitude)
+    location = data["location"]
+    return location, get_plotly_graph(
+        latitude=data["latitude"], longitude=data["longitude"], location=location
+    )
 
 
 with gr.Blocks() as demo:
     gr.Markdown("# GeoLocator")
     gr.Markdown(
-        "An app that guesses the location of an image 🌌, a video 📹 or a YouTube link 🔗."
+        "## An app that guesses the location of an image 🌌, a video 📹 or a YouTube link 🔗."
+    )
+    gr.Markdown(
+        "Find the code powering this application [here](https://github.com/samhita-alla/geolocator)."
     )
     with gr.Tab("Image"):
         with gr.Row():
-            img_input = gr.Image(type="filepath")
+            img_input = gr.Image(type="filepath", label="im")
             with gr.Column():
                 img_text_output = gr.Textbox(label="Location")
                 img_plot = gr.Plot()
         img_text_button = gr.Button("Go locate!")
     with gr.Tab("Video"):
         with gr.Row():
-            video_input = gr.Video(type="filepath")
+            video_input = gr.Video(type="filepath", label="video")
             with gr.Column():
                 video_text_output = gr.Textbox(label="Location")
                 video_plot = gr.Plot()
@@ -109,8 +131,6 @@ with gr.Blocks() as demo:
         url_gradio, inputs=url_input, outputs=[url_text_output, url_plot]
     )
 
-    examples = gr.Examples(
-        examples=["https://www.youtube.com/watch?v=wxeQkJTZrsw"], inputs=[url_input]
-    )
+    examples = gr.Examples(".", inputs=[img_input, video_input, url_input])
 
 demo.launch()
