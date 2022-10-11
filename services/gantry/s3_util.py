@@ -1,4 +1,4 @@
-#s3_util.py
+# s3_util.py
 
 """
 utility that uses boto to create buckets
@@ -10,7 +10,6 @@ import json
 
 import boto3
 import botocore
-
 from GantryUtility.string_img_util import *
 
 S3_URL_FORMAT = "https://{bucket}.s3.{region}.amazonaws.com/{key}"

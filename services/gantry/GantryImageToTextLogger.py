@@ -1,4 +1,4 @@
-#GantryImageToTextLogger.py
+# GantryImageToTextLogger.py
 
 """
 class to handle flagging in gradio to gantry
@@ -9,11 +9,11 @@ from typing import List, Optional, Union
 
 import gantry
 import gradio as gr
+from GantryUtility.s3_util import *
+from GantryUtility.string_img_util import *
 from gradio.components import Component
 from smart_open import open
 
-from GantryUtility.s3_util import *
-from GantryUtility.string_img_util import *
 
 class GantryImageToTextLogger(gr.FlaggingCallback):
     """
@@ -67,9 +67,11 @@ class GantryImageToTextLogger(gr.FlaggingCallback):
         self.bucket = get_or_create_bucket(flagging_dir)
         enable_bucket_versioning(self.bucket)
         add_access_policy(self.bucket)
-        self.image_component_idx, self.text_component_idx, self.text_component2_idx = self._find_image_video_and_text_components(
-            components
-        )
+        (
+            self.image_component_idx,
+            self.text_component_idx,
+            self.text_component2_idx,
+        ) = self._find_image_video_and_text_components(components)
 
     def flag(self, flag_data, flag_option=None, flag_index=None, username=None) -> int:
         """Sends flagged outputs and feedback to Gantry and image inputs to S3."""
@@ -93,7 +95,6 @@ class GantryImageToTextLogger(gr.FlaggingCallback):
         )
         self._counter += 1
         display("Flagging response has been succesfully sent to gantry.io!")
-
 
         return self._counter
 

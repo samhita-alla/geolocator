@@ -99,11 +99,11 @@ def generate_prediction_logit(
         .reset_index()
         .loc[0]
     )
-    
+
     latitude, longitude = best_pred["pred_lat"], best_pred["pred_lng"]
     logging.info(f"Latitude: {latitude}, Longitutde: {longitude}")
 
-    #hard coding for Gradio Dev
+    # hard coding for Gradio Dev
     latitude, longitude = 37.719, 122.258
 
     # get location
