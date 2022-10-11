@@ -96,9 +96,14 @@ def generate_prediction_logit(
         .reset_index()
         .loc[0]
     )
+
     latitude, longitude = best_pred["pred_lat"], best_pred["pred_lng"]
     logging.info(f"Latitude: {latitude}, Longitutde: {longitude}")
 
     # get location
-    location = get_location(latitude=latitude, longitude=longitude)
+    try:
+        location = get_location(latitude=latitude, longitude=longitude)
+    except Exception:
+        return None, None, None
+
     return location, latitude, longitude
