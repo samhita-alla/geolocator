@@ -10,7 +10,6 @@ import json
 
 import boto3
 import botocore
-from GantryUtility.string_img_util import *
 
 S3_URL_FORMAT = "https://{bucket}.s3.{region}.amazonaws.com/{key}"
 S3_URI_FORMAT = "s3://{bucket}/{key}"

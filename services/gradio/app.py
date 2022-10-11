@@ -9,10 +9,15 @@ import plotly
 import plotly.express as px
 import requests
 from dotenv import load_dotenv
+from gantry_callback.GantryImageToTextLogger import GantryImageToTextLogger
 
 load_dotenv()
 
 URL = os.getenv("ENDPOINT")
+GANTRY_APP_NAME = os.getenv("GANTRY_APP_NAME")  #'fsdl-geolocator-dev-1008'
+GANTRY_KEY = os.getenv("GANTRY_API_KEY")
+AWS_KEY = os.getenv("AWS_KEY")
+AWS_SECRET_KEY = os.getenv("AWS_SECRET_KET")
 
 
 def get_plotly_graph(
@@ -91,6 +96,8 @@ def url_gradio(url: str) -> Tuple[str, plotly.graph_objects.Figure]:
     )
 
 
+callback = GantryImageToTextLogger(application=GANTRY_APP_NAME, api_key=GANTRY_KEY)
+
 with gr.Blocks() as demo:
     gr.Markdown("# GeoLocator")
     gr.Markdown(
@@ -106,6 +113,8 @@ with gr.Blocks() as demo:
                 img_text_output = gr.Textbox(label="Location")
                 img_plot = gr.Plot()
         img_text_button = gr.Button("Go locate!")
+        with gr.Row():
+            img_flag_button = gr.Button("Flag this image")
     with gr.Tab("Video"):
         with gr.Row():
             video_input = gr.Video(type="filepath", label="video")
@@ -120,6 +129,18 @@ with gr.Blocks() as demo:
                 url_text_output = gr.Textbox(label="Location")
                 url_plot = gr.Plot()
         url_text_button = gr.Button("Go locate!")
+
+    callback.setup(
+        components=[img_input, img_text_output],
+        flagging_dir=make_unique_bucket_name(prefix=GANTRY_APP_NAME, seed="420"),
+    )
+
+    img_flag_button.click(
+        fn=lambda *args: callback.flag(args),
+        inputs=[img_input, img_text_output],
+        outputs=img_text_output,
+        preprocess=False,
+    )
 
     img_text_button.click(
         image_gradio, inputs=img_input, outputs=[img_text_output, img_plot]

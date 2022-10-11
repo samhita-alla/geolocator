@@ -9,10 +9,10 @@ from typing import List, Optional, Union
 
 import gantry
 import gradio as gr
-from GantryUtility.s3_util import *
-from GantryUtility.string_img_util import *
 from gradio.components import Component
+from s3_util import *
 from smart_open import open
+from string_img_util import *
 
 
 class GantryImageToTextLogger(gr.FlaggingCallback):
