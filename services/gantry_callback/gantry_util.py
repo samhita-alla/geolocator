@@ -11,15 +11,16 @@ from typing import List, Optional, Union
 import gantry
 import gradio as gr
 from gradio.components import Component
-from s3_util import (
+from smart_open import open
+
+from .s3_util import (
     add_access_policy,
     enable_bucket_versioning,
     get_or_create_bucket,
     get_uri_of,
     make_key,
 )
-from smart_open import open
-from string_img_util import read_b64_string
+from .string_img_util import read_b64_string
 
 
 class GantryImageToTextLogger(gr.FlaggingCallback):

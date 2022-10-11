@@ -69,6 +69,7 @@ GANTRY_APP_NAME = os.getenv("GANTRY_APP_NAME")
 GANTRY_KEY = os.getenv("GANTRY_API_KEY")
 AWS_KEY = os.getenv("AWS_KEY")
 AWS_SECRET_KEY = os.getenv("AWS_SECRET_KET")
+MAPBOX_TOKEN = os.getenv("MAPBOX_TOKEN")
 ```
 
 ## 🤖 BentoML
@@ -92,4 +93,4 @@ Gradio code can be found under the [services/gradio](services/gradio/) directory
 
 ## ☑️ Gantry
 
-Gantry code can be found under the [services/gantry_callback](services/gantry_callback/) directory.
+Code for Gantry flagging for images can be found under the [services/gantry_callback](services/gantry_callback/) directory.
