@@ -2,3 +2,4 @@
 GeoEstimation/
 *.sh
 __pycache__/
+.env

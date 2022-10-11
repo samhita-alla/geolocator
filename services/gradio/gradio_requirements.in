@@ -1,0 +1,5 @@
+gradio
+pandas
+plotly
+requests
+python-dotenv

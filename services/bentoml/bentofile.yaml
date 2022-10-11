@@ -34,3 +34,5 @@ python:
    - onnxruntime
    - Pillow
    - bentoml[io-image]
+   - opentelemetry-sdk==1.12.0
+   - pydantic

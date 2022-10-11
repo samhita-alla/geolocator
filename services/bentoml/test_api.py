@@ -1,35 +1,62 @@
 """
 Tests the Bento Service API
 """
-import requests
-from requests_toolbelt.multipart.encoder import MultipartEncoder
+import argparse
 import mimetypes
 
-image_file_name = "test_data/santorini-island-greece-santorini-island-greece-oia-town-traditional-white-houses-churches-blue-domes-over-caldera-146011399.jpg"
-video_file_name = "test_data/newyork_video.mp4"
+import requests
 
-for metadata in ["image", "video", "url"]:
-    m = MultipartEncoder(
-        fields={
-            "url": "https://www.youtube.com/watch?v=ADt1LnbL2HI",
-            "image": (
-                image_file_name,
-                open(image_file_name, "rb"),
-                mimetypes.guess_type(image_file_name)[0],
-            ),
+image_file_name = "../gradio/data/test/greece.jpg"
+video_file_name = "../gradio/data/test/newyork.mp4"
+
+
+def generate_predictions(args):
+    url = args.url
+    generate_image_prediction(url)
+    generate_video_prediction(url)
+    generate_url_prediction(url)
+
+
+def generate_image_prediction(url):
+    print(
+        requests.post(
+            f"{url}predict-image",
+            files={
+                "image": (
+                    image_file_name,
+                    open(image_file_name, "rb"),
+                    mimetypes.guess_type(image_file_name)[0],
+                )
+            },
+        ).text
+    )
+
+
+def generate_video_prediction(url):
+    requests.post(
+        f"{url}predict-video",
+        files={
             "video": (
                 video_file_name,
                 open(video_file_name, "rb"),
                 "application/octet-stream",
-            ),
-            "metadata": metadata,
-        }
-    )
+            )
+        },
+    ).text
 
+
+def generate_url_prediction(url):
     print(
         requests.post(
-            "http://127.0.0.1:3000/predict",
-            headers={"Content-Type": m.content_type},
-            data=m,
+            f"{url}predict-url",
+            headers={"content-type": "text/plain"},
+            data="https://www.youtube.com/watch?v=ADt1LnbL2HI",
         ).text
     )
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--url", default=None, type=str, help="API endpoint URL")
+    args = parser.parse_args()
+    generate_predictions(args=args)

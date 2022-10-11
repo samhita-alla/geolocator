@@ -3,24 +3,25 @@ Bento Service Definition
 """
 from __future__ import annotations
 
+import glob
+import io
 import os
 import shutil
-from pathlib import Path
-from typing import Any, Dict, List, TYPE_CHECKING
-
 import uuid
-import io
+from pathlib import Path
+from typing import TYPE_CHECKING, Any, Dict, List
+
 import bentoml
 import numpy as np
 import pandas as pd
 import torch
-from bentoml.io import Multipart, Text, File, Image
-from tqdm.auto import tqdm
-
+from bentoml.io import JSON, File, Image, Text
 from classification.dataset import FiveCropImageDataset
 from classification.train_base import MultiPartitioningClassifier
 from post_processing import generate_prediction_logit
 from pre_processing import capture_frames, extract_youtube_video
+from pydantic import BaseModel
+from tqdm.auto import tqdm
 
 if TYPE_CHECKING:
     from PIL.Image import Image as PILImage
@@ -28,16 +29,16 @@ if TYPE_CHECKING:
 IMAGE_PARENT_DIR = "geolocator-images"
 ONNX_MODEL = "onnx_geolocator"
 VERSION = "latest"
+VIDEOS_DIRECTORY = "videos"
 BATCH_SIZE = 13
 NUM_OF_WORKERS = 0
+SELECTED_FRAMES_DIRECTORY = "selected-frames"
 
 
 def create_image_dir(img_data: Image) -> str:
     unique_string = str(uuid.uuid4())
     image_dir = os.path.join(IMAGE_PARENT_DIR, os.path.basename(unique_string))
 
-    # clear the image directory before filling it up
-    shutil.rmtree(image_dir, ignore_errors=True)
     os.makedirs(image_dir)
     img_data.save(
         f"{image_dir}/{unique_string}.{(img_data.format).lower()}",
@@ -58,7 +59,8 @@ def video_helper(video_file: str, info_dict: Dict[str, Any]) -> str:
 
 
 def video_processor(video_file: io.BytesIO[Any]) -> str:
-    video_file_name = os.path.basename(video_file._name)
+    os.makedirs(VIDEOS_DIRECTORY, exist_ok=True)
+    video_file_name = f"{VIDEOS_DIRECTORY}/{os.path.basename(video_file._name)}"
     with open(video_file_name, "wb") as outfile:
         outfile.write(video_file.read())
 
@@ -119,19 +121,15 @@ geolocator_runner = bentoml.Runner(
     GeoLocatorRunnable,
     models=[bentoml.onnx.get(f"{ONNX_MODEL}:{VERSION}")],
 )
-svc = bentoml.Service("geolocator", runners=[geolocator_runner])
-input_spec = Multipart(url=Text(), image=Image(), video=File(), metadata=Text())
 
 
-@svc.api(input=input_spec, output=Text())
-def predict(url: str, image: PILImage, video: io.BytesIO[Any], metadata: str) -> str:
-    if metadata == "image":
-        image_dir = img_processor(img_data=image)
-    elif metadata == "video":
-        image_dir = video_processor(video_file=video)
-    elif metadata == "url":
-        image_dir = url_processor(url=url)
+class GeoLocatorPredictions(BaseModel):
+    location: str
+    latitude: float
+    longitude: float
 
+
+def predict_helper(image_dir: str, metadata: str) -> GeoLocatorPredictions:
     dataloader = torch.utils.data.DataLoader(
         FiveCropImageDataset(meta_csv=None, image_dir=image_dir),
         batch_size=BATCH_SIZE,
@@ -191,5 +189,44 @@ def predict(url: str, image: PILImage, video: io.BytesIO[Any], metadata: str) ->
     geolocator_df.set_index(keys=["img_id", "p_key"], inplace=True)
 
     # get the location
-    location, *_ = generate_prediction_logit(inference_df=geolocator_df)
-    return location
+    location, latitude, longitude = generate_prediction_logit(
+        inference_df=geolocator_df
+    )
+
+    # clear up the image directory -- memory optimization
+    shutil.rmtree(image_dir, ignore_errors=True)
+
+    if metadata in ["video", "url"]:
+        files = glob.glob(
+            os.path.join(
+                VIDEOS_DIRECTORY,
+                image_dir.split(SELECTED_FRAMES_DIRECTORY + "/")[1].split(".")[0]
+                + ".*",
+            )
+        )
+        for each_file in files:
+            os.remove(each_file)
+
+    return {"location": location, "latitude": latitude, "longitude": longitude}
+
+
+svc = bentoml.Service("geolocator", runners=[geolocator_runner])
+output_schema = JSON(pydantic_model=GeoLocatorPredictions)
+
+
+@svc.api(input=Image(), output=output_schema, route="predict-image")
+def predict_image(image: PILImage) -> GeoLocatorPredictions:
+    image_dir = img_processor(img_data=image)
+    return predict_helper(image_dir=image_dir, metadata="image")
+
+
+@svc.api(input=File(), output=output_schema, route="predict-video")
+def predict_video(video: io.BytesIO[Any]) -> GeoLocatorPredictions:
+    image_dir = video_processor(video_file=video)
+    return predict_helper(image_dir=image_dir, metadata="video")
+
+
+@svc.api(input=Text(), output=output_schema, route="predict-url")
+def predict_url(url: str) -> GeoLocatorPredictions:
+    image_dir = url_processor(url=url)
+    return predict_helper(image_dir=image_dir, metadata="url")
