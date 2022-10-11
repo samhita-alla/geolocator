@@ -10,11 +10,12 @@ import plotly.express as px
 import requests
 from dotenv import load_dotenv
 from gantry_callback.GantryImageToTextLogger import GantryImageToTextLogger
+from gantry_callback.s3_util import make_unique_bucket_name
 
 load_dotenv()
 
 URL = os.getenv("ENDPOINT")
-GANTRY_APP_NAME = os.getenv("GANTRY_APP_NAME")  #'fsdl-geolocator-dev-1008'
+GANTRY_APP_NAME = os.getenv("GANTRY_APP_NAME")
 GANTRY_KEY = os.getenv("GANTRY_API_KEY")
 AWS_KEY = os.getenv("AWS_KEY")
 AWS_SECRET_KEY = os.getenv("AWS_SECRET_KET")
