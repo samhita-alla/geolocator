@@ -1,61 +1,5 @@
-"""
-Utility functions for text_recognizer module.
-This work is not our own it was written entirely by https://github.com/full-stack-deep-learning
-"""
-
 import base64
-import contextlib
-import hashlib
-import os
 from io import BytesIO
-from pathlib import Path
-from typing import Union
-
-import numpy as np
-import smart_open
-from PIL import Image
-
-
-def to_categorical(y, num_classes):
-    """1-hot encode a tensor."""
-    return np.eye(num_classes, dtype="uint8")[y]
-
-
-def read_image_pil(image_uri: Union[Path, str], grayscale=False) -> Image:
-    with smart_open.open(image_uri, "rb") as image_file:
-        return read_image_pil_file(image_file, grayscale)
-
-
-def read_image_pil_file(image_file, grayscale=False) -> Image:
-    with Image.open(image_file) as image:
-        if grayscale:
-            image = image.convert(mode="L")
-        else:
-            image = image.convert(mode=image.mode)
-        return image
-
-
-@contextlib.contextmanager
-def temporary_working_directory(working_dir: Union[str, Path]):
-    """Temporarily switches to a directory, then returns to the original directory on exit."""
-    curdir = os.getcwd()
-    os.chdir(working_dir)
-    try:
-        yield
-    finally:
-        os.chdir(curdir)
-
-
-# Hide lines below until Lab 08
-def read_b64_image(b64_string, grayscale=False):
-    """Load base64-encoded images."""
-    try:
-        image_file = read_b64_string(b64_string)
-        return read_image_pil_file(image_file, grayscale)
-    except Exception as exception:
-        raise ValueError(
-            "Could not load image from b64 {}: {}".format(b64_string, exception)
-        ) from exception
 
 
 def read_b64_string(b64_string, return_data_type=False):
@@ -81,20 +25,3 @@ def split_and_validate_b64_string(b64_string):
     assert header.endswith(";base64")
     data_type = header.split(";")[0].split(":")[1]
     return data_type, data
-
-
-# Hide lines above until Lab 08
-
-
-def encode_b64_image(image, format="png"):
-    """Encode a PIL image as a base64 string."""
-    _buffer = BytesIO()  # bytes that live in memory
-    image.save(_buffer, format=format)  # but which we write to like a file
-    encoded_image = base64.b64encode(_buffer.getvalue()).decode("utf8")
-    return encoded_image
-
-
-def compute_sha256(filename: Union[Path, str]):
-    """Return SHA256 checksum of a file."""
-    with open(filename, "rb") as f:
-        return hashlib.sha256(f.read()).hexdigest()

@@ -1,7 +1,8 @@
-# GantryImageToTextLogger.py
-
 """
-class to handle flagging in gradio to gantry
+Class to handle flagging in Gradio to Gantry.
+
+Originally written by the FSDL educators at https://github.com/full-stack-deep-learning/fsdl-text-recognizer-2022/blob/main/app_gradio/flagging.py
+that has been adjusted for the geolocator project.
 """
 
 import os
@@ -10,14 +11,20 @@ from typing import List, Optional, Union
 import gantry
 import gradio as gr
 from gradio.components import Component
+from s3_util import (
+    add_access_policy,
+    enable_bucket_versioning,
+    get_or_create_bucket,
+    get_uri_of,
+    make_key,
+)
 from smart_open import open
+from string_img_util import read_b64_string
 
 
 class GantryImageToTextLogger(gr.FlaggingCallback):
     """
     A FlaggingCallback that logs flagged image-to-text data to Gantry via S3.
-    Originally written by FSDL educators https://github.com/full-stack-deep-learning/fsdl-text-recognizer-2022/blob/main/app_gradio/flagging.py
-    and adjusted for the geolocator project
     """
 
     def __init__(
@@ -92,7 +99,6 @@ class GantryImageToTextLogger(gr.FlaggingCallback):
             feedback=feedback,
         )
         self._counter += 1
-        display("Flagging response has been succesfully sent to gantry.io!")
 
         return self._counter
 

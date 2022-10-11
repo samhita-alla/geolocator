@@ -16,8 +16,24 @@ async-timeout==4.0.2
     # via aiohttp
 attrs==22.1.0
     # via aiohttp
+backoff==1.11.1
+    # via gantry
 bcrypt==4.0.1
     # via paramiko
+boto3==1.24.89
+    # via
+    #   -r gradio_requirements.in
+    #   boto3-extensions
+boto3-extensions==0.19.0
+    # via gantry
+botocore==1.27.89
+    # via
+    #   -r gradio_requirements.in
+    #   boto3
+    #   boto3-extensions
+    #   s3transfer
+cachetools==4.2.4
+    # via gantry
 certifi==2022.9.24
     # via
     #   httpcore
@@ -32,13 +48,24 @@ charset-normalizer==2.1.1
     #   aiohttp
     #   requests
 click==8.1.3
-    # via uvicorn
+    # via
+    #   gantry
+    #   uvicorn
+click-spinner==0.1.10
+    # via gantry
+colorama==0.4.5
+    # via
+    #   gantry
+    #   halo
+    #   log-symbols
 contourpy==1.0.5
     # via matplotlib
 cryptography==38.0.1
     # via paramiko
 cycler==0.11.0
     # via matplotlib
+dateparser==1.1.1
+    # via gantry
 fastapi==0.85.0
     # via gradio
 ffmpy==0.3.0
@@ -51,6 +78,8 @@ frozenlist==1.3.1
     #   aiosignal
 fsspec==2022.8.2
     # via gradio
+gantry==0.4.13
+    # via -r gradio_requirements.in
 gradio==3.4.1
     # via -r gradio_requirements.in
 h11==0.12.0
@@ -58,6 +87,8 @@ h11==0.12.0
     #   gradio
     #   httpcore
     #   uvicorn
+halo==0.0.31
+    # via gantry
 httpcore==0.15.0
     # via httpx
 httpx==0.23.0
@@ -68,24 +99,40 @@ idna==3.4
     #   requests
     #   rfc3986
     #   yarl
+isodate==0.6.1
+    # via gantry
 jinja2==3.1.2
     # via gradio
+jmespath==1.0.1
+    # via
+    #   boto3
+    #   botocore
 kiwisolver==1.4.4
     # via matplotlib
 linkify-it-py==1.0.3
     # via markdown-it-py
+log-symbols==0.0.14
+    # via halo
 markdown-it-py[linkify,plugins]==2.1.0
     # via
     #   gradio
     #   mdit-py-plugins
 markupsafe==2.1.1
     # via jinja2
+marshmallow==3.18.0
+    # via
+    #   gantry
+    #   marshmallow-oneofschema
+marshmallow-oneofschema==3.0.1
+    # via gantry
 matplotlib==3.6.1
     # via gradio
 mdit-py-plugins==0.3.1
     # via markdown-it-py
 mdurl==0.1.2
     # via markdown-it-py
+monotonic==1.6
+    # via gantry
 multidict==6.0.2
     # via
     #   aiohttp
@@ -93,16 +140,20 @@ multidict==6.0.2
 numpy==1.23.3
     # via
     #   contourpy
+    #   gantry
     #   gradio
     #   matplotlib
     #   pandas
 orjson==3.8.0
     # via gradio
 packaging==21.3
-    # via matplotlib
+    # via
+    #   marshmallow
+    #   matplotlib
 pandas==1.5.0
     # via
     #   -r gradio_requirements.in
+    #   gantry
     #   gradio
 paramiko==2.11.0
     # via gradio
@@ -130,6 +181,9 @@ pyparsing==3.0.9
     #   packaging
 python-dateutil==2.8.2
     # via
+    #   botocore
+    #   dateparser
+    #   gantry
     #   matplotlib
     #   pandas
 python-dotenv==0.21.0
@@ -137,37 +191,69 @@ python-dotenv==0.21.0
 python-multipart==0.0.5
     # via gradio
 pytz==2022.4
-    # via pandas
+    # via
+    #   dateparser
+    #   pandas
+pytz-deprecation-shim==0.1.0.post0
+    # via tzlocal
 pyyaml==6.0
-    # via gradio
+    # via
+    #   gantry
+    #   gradio
+regex==2022.3.2
+    # via dateparser
 requests==2.28.1
     # via
     #   -r gradio_requirements.in
+    #   gantry
     #   gradio
 rfc3986[idna2008]==1.5.0
     # via httpx
+s3transfer==0.6.0
+    # via boto3
 six==1.16.0
     # via
+    #   halo
+    #   isodate
     #   paramiko
     #   python-dateutil
     #   python-multipart
+smart-open==6.2.0
+    # via -r gradio_requirements.in
 sniffio==1.3.0
     # via
     #   anyio
     #   httpcore
     #   httpx
+spinners==0.0.24
+    # via halo
 starlette==0.20.4
     # via fastapi
+tabulate==0.9.0
+    # via gantry
 tenacity==8.1.0
     # via plotly
+termcolor==2.0.1
+    # via halo
+tqdm==4.64.1
+    # via gantry
+typeguard==2.13.3
+    # via gantry
 typing-extensions==4.4.0
     # via
+    #   gantry
     #   pydantic
     #   starlette
+tzdata==2022.4
+    # via pytz-deprecation-shim
+tzlocal==4.2
+    # via dateparser
 uc-micro-py==1.0.1
     # via linkify-it-py
 urllib3==1.26.12
-    # via requests
+    # via
+    #   botocore
+    #   requests
 uvicorn==0.18.3
     # via gradio
 websockets==10.3

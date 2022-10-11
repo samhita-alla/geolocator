@@ -9,7 +9,7 @@ import os
 import shutil
 import uuid
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Dict, List
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 import bentoml
 import numpy as np
@@ -124,9 +124,9 @@ geolocator_runner = bentoml.Runner(
 
 
 class GeoLocatorPredictions(BaseModel):
-    location: str
-    latitude: float
-    longitude: float
+    location: Optional[str] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
 
 
 def predict_helper(image_dir: str, metadata: str) -> GeoLocatorPredictions:
@@ -193,9 +193,8 @@ def predict_helper(image_dir: str, metadata: str) -> GeoLocatorPredictions:
         inference_df=geolocator_df
     )
 
-    # clear up the image directory -- memory optimization
+    # clear up the image_dir and downloaded videos
     shutil.rmtree(image_dir, ignore_errors=True)
-
     if metadata in ["video", "url"]:
         files = glob.glob(
             os.path.join(

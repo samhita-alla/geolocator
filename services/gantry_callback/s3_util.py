@@ -1,8 +1,6 @@
-# s3_util.py
-
 """
-utility that uses boto to create buckets
-This work is not our own it was written entirely by https://github.com/full-stack-deep-learning
+Utility that uses boto to create buckets.
+This work is not our own but is entirely written by https://github.com/full-stack-deep-learning.
 """
 
 import hashlib

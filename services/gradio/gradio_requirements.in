@@ -3,3 +3,7 @@ pandas
 plotly
 requests
 python-dotenv
+boto3
+botocore
+gantry
+smart-open

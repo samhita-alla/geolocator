@@ -1,7 +1,7 @@
 import json
 import mimetypes
 import os
-from typing import Tuple
+from typing import Dict, Tuple, Union
 
 import gradio as gr
 import pandas as pd
@@ -9,7 +9,7 @@ import plotly
 import plotly.express as px
 import requests
 from dotenv import load_dotenv
-from gantry_callback.GantryImageToTextLogger import GantryImageToTextLogger
+from gantry_callback.gantry_util import GantryImageToTextLogger
 from gantry_callback.s3_util import make_unique_bucket_name
 
 load_dotenv()
@@ -42,6 +42,22 @@ def get_plotly_graph(
     return fig
 
 
+def gradio_error():
+    raise gr.Error("Unable to detect the location!")
+
+
+def get_outputs(
+    data: Dict[str, Union[str, float, None]]
+) -> Tuple[str, plotly.graph_objects.Figure]:
+    location = data["location"]
+    if location is None:
+        gradio_error()
+
+    return data["location"], get_plotly_graph(
+        latitude=data["latitude"], longitude=data["longitude"], location=location
+    )
+
+
 def image_gradio(img_file: str) -> Tuple[str, plotly.graph_objects.Figure]:
     data = json.loads(
         requests.post(
@@ -56,10 +72,7 @@ def image_gradio(img_file: str) -> Tuple[str, plotly.graph_objects.Figure]:
         ).text
     )
 
-    location = data["location"]
-    return data["location"], get_plotly_graph(
-        latitude=data["latitude"], longitude=data["longitude"], location=location
-    )
+    return get_outputs(data=data)
 
 
 def video_gradio(video_file: str) -> Tuple[str, plotly.graph_objects.Figure]:
@@ -76,10 +89,7 @@ def video_gradio(video_file: str) -> Tuple[str, plotly.graph_objects.Figure]:
         ).text
     )
 
-    location = data["location"]
-    return location, get_plotly_graph(
-        latitude=data["latitude"], longitude=data["longitude"], location=location
-    )
+    return get_outputs(data=data)
 
 
 def url_gradio(url: str) -> Tuple[str, plotly.graph_objects.Figure]:
@@ -91,21 +101,13 @@ def url_gradio(url: str) -> Tuple[str, plotly.graph_objects.Figure]:
         ).text
     )
 
-    location = data["location"]
-    return location, get_plotly_graph(
-        latitude=data["latitude"], longitude=data["longitude"], location=location
-    )
+    return get_outputs(data=data)
 
-
-callback = GantryImageToTextLogger(application=GANTRY_APP_NAME, api_key=GANTRY_KEY)
 
 with gr.Blocks() as demo:
     gr.Markdown("# GeoLocator")
     gr.Markdown(
-        "## An app that guesses the location of an image 🌌, a video 📹 or a YouTube link 🔗."
-    )
-    gr.Markdown(
-        "Find the code powering this application [here](https://github.com/samhita-alla/geolocator)."
+        "### An app that guesses the location of an image 🌌, a video 📹 or a YouTube link 🔗."
     )
     with gr.Tab("Image"):
         with gr.Row():
@@ -115,7 +117,8 @@ with gr.Blocks() as demo:
                 img_plot = gr.Plot()
         img_text_button = gr.Button("Go locate!")
         with gr.Row():
-            img_flag_button = gr.Button("Flag this image")
+            # Flag button
+            img_flag_button = gr.Button("Flag this output")
     with gr.Tab("Video"):
         with gr.Row():
             video_input = gr.Video(type="filepath", label="video")
@@ -131,6 +134,9 @@ with gr.Blocks() as demo:
                 url_plot = gr.Plot()
         url_text_button = gr.Button("Go locate!")
 
+    # Gantry flagging #
+    callback = GantryImageToTextLogger(application=GANTRY_APP_NAME, api_key=GANTRY_KEY)
+
     callback.setup(
         components=[img_input, img_text_output],
         flagging_dir=make_unique_bucket_name(prefix=GANTRY_APP_NAME, seed="420"),
@@ -142,6 +148,7 @@ with gr.Blocks() as demo:
         outputs=img_text_output,
         preprocess=False,
     )
+    ###################
 
     img_text_button.click(
         image_gradio, inputs=img_input, outputs=[img_text_output, img_plot]
@@ -154,5 +161,9 @@ with gr.Blocks() as demo:
     )
 
     examples = gr.Examples(".", inputs=[img_input, video_input, url_input])
+
+    gr.Markdown(
+        "Check out the [GitHub repository](https://github.com/samhita-alla/geolocator) that this demo is based off of."
+    )
 
 demo.launch()
