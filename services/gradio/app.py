@@ -20,8 +20,6 @@ load_dotenv()
 URL = os.getenv("ENDPOINT")
 GANTRY_APP_NAME = os.getenv("GANTRY_APP_NAME")
 GANTRY_KEY = os.getenv("GANTRY_API_KEY")
-AWS_KEY = os.getenv("AWS_KEY")
-AWS_SECRET_KEY = os.getenv("AWS_SECRET_KEY")
 MAPBOX_TOKEN = os.getenv("MAPBOX_TOKEN")
 
 
