@@ -63,13 +63,14 @@ We found that prediction confidence surpassed the performance of DBSCAN clusteri
 
 Gradio and Gantry can be accessed after initializing the following environment variables:
 
-```python
-URL = os.getenv("ENDPOINT") # AWS EC2 public IP
-GANTRY_APP_NAME = os.getenv("GANTRY_APP_NAME")
-GANTRY_KEY = os.getenv("GANTRY_API_KEY")
-AWS_KEY = os.getenv("AWS_KEY")
-AWS_SECRET_KEY = os.getenv("AWS_SECRET_KET")
-MAPBOX_TOKEN = os.getenv("MAPBOX_TOKEN")
+```
+ENDPOINT (AWS EC2 public IP)
+GANTRY_APP_NAME
+GANTRY_API_KEY
+AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY
+AWS_DEFAULT_REGION
+MAPBOX_TOKEN
 ```
 
 ## 🤖 BentoML
@@ -93,4 +94,4 @@ Gradio code can be found under the [services/gradio](services/gradio/) directory
 
 ## ☑️ Gantry
 
-Code for Gantry flagging for images can be found under the [services/gantry_callback](services/gantry_callback/) directory.
+Code for Gantry flagging can be found under the [services/gantry_callback](services/gantry_callback/) directory.
