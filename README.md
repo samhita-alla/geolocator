@@ -1,6 +1,6 @@
 # 📍 FSDL 2022: GeoLocator
 
-An end-to-end ML application built on top of [GeoEstimation](https://github.com/TIBHannover/GeoEstimation)'s pre-trained ResNet model that identifies the location (latitude, longitude) given an image or video.
+An end-to-end ML application built on top of [GeoEstimation](https://github.com/TIBHannover/GeoEstimation)'s pre-trained ResNet model that identifies the location (latitude, longitude) given an image, a video or a YouTube link.
 
 Team: [@samhita-alla](https://github.com/samhita-alla), [@yiyixuxu](https://github.com/yiyixuxu), [@WinsonTruong](https://github.com/WinsonTruong), [@dayweek](https://github.com/dayweek)
 
@@ -12,14 +12,14 @@ Team: [@samhita-alla](https://github.com/samhita-alla), [@yiyixuxu](https://gith
 
 ## 🥞 Stack
 
-GeoLocator is the result attained by utilizing some of the best-in-class tools. We've used:
+We built GeoLocator by utilizing some of the best-in-class tools.
 
 - **PyTorch Lightning** to construct the ResNet model (thanks to GeoEstimation's pre-trained model!)
 - **YouTube DL** to download YouTube videos
 - **Katna** to capture video frames
 - **Geopy** to generate location from latitudes and longitudes
-- **Plotly** to plot the maps
-- **ONNX** to generate a serialized model
+- **Plotly** to plot maps
+- **ONNX** to serialize the model
 - **ONNXRuntime** to generate predictions
 - **BentoML** to prep the model for serving
 - **Gradio** to build the user-facing side of the application
@@ -38,19 +38,19 @@ The `geolocator.ipynb` notebook contains the relevant code and commands to set u
 - Generates an ONNX version of the pre-trained model
 - Generates predictions using ONNXRuntime to verify if the ONNX conversion was proper
 - Creates a Bento ONNX model
-- [Optional] Run the Bento service to generate predictions using the Bento model (doesn't work on Google Colab)
+- [Optional] Runs the Bento service (doesn't work on Google Colab)
 
 ## 🗃 Contents
 
 ### Pre- and post-processing logic
 
-The `post_processing.py` and `pre_processing.py` files contain functions that does post- and pre-processing of the data, respectively.
-`post_processing.py` contains functions to generate our custom solution to generate location for videos.
+The `post_processing.py` and `pre_processing.py` files in the `app` directory contain functions that do post- and pre-processing of the data, respectively.
+`post_processing.py` contains the custom inferencing logic to predict the location of a video or YouTube link.
 `pre_processing.py` downloads a YouTube video if given and captures the video frames.
 
 #### Our video prediction logic
 
-The `post_processing.py` contains two technique to predict the location of a video -- DBSCAN clustering and prediction confidence.
+The `post_processing.py` file contains two techniques to predict the location of a video: DBSCAN clustering and prediction confidence.
 
 DBSCAN Clustering clusters the predicted latitudes and longitudes of video frames, finds the dense cluster, and computes
 the mean of the dense cluster's latitudes and longitudes.
@@ -61,7 +61,7 @@ We found that prediction confidence surpassed the performance of DBSCAN clusteri
 
 #### Environment variables
 
-Gradio and Gantry can be accessed after initializing the following environment variables:
+Gradio and Gantry can be accessed only after initializing the following environment variables in a `.env` file:
 
 ```
 ENDPOINT (AWS EC2 public IP)
@@ -73,9 +73,11 @@ AWS_DEFAULT_REGION
 MAPBOX_TOKEN
 ```
 
+> AWS creds are required to store the uploaded images.
+
 ## 🤖 BentoML
 
-After generating a Bento model, run the following commands in the `GeoEstimation` directory to generate a Docker image:
+After generating a Bento model, run the following commands in the `services/bentoml` directory to generate a Docker image:
 
 - `bentoml build`
 - `bentoml containerize geolocator:<version>`
@@ -95,3 +97,5 @@ Gradio code can be found under the [services/gradio](services/gradio/) directory
 ## ☑️ Gantry
 
 Code for Gantry flagging can be found under the [services/gantry_callback](services/gantry_callback/) directory.
+
+> Gantry monitoring is currently implemented to flag the outputs of images only.
