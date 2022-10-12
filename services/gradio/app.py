@@ -24,6 +24,7 @@ MAPBOX_TOKEN = os.getenv("MAPBOX_TOKEN")
 
 examples = json.load(open("examples.json"))
 
+
 def get_plotly_graph(
     latitude: float, longitude: float, location: str
 ) -> plotly.graph_objects.Figure:
