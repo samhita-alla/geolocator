@@ -6,8 +6,8 @@ import mimetypes
 
 import requests
 
-image_file_name = "../gradio/data/test/greece.jpg"
-video_file_name = "../gradio/data/test/newyork.mp4"
+image_file_name = "../gradio/data/test/images/greece.jpg"
+video_file_name = "../gradio/data/test/videos/newyork.mp4"
 
 
 def generate_predictions(args):
