@@ -10,10 +10,11 @@ import plotly
 import plotly.express as px
 import requests
 from dotenv import load_dotenv
-from gantry_callback.gantry_util import GantryImageToTextLogger
-from gantry_callback.s3_util import make_unique_bucket_name
 
 sys.path.append("..")
+
+from gantry_callback.gantry_util import GantryImageToTextLogger  # noqa: E402
+from gantry_callback.s3_util import make_unique_bucket_name  # noqa: E402
 
 load_dotenv()
 
@@ -21,6 +22,8 @@ URL = os.getenv("ENDPOINT")
 GANTRY_APP_NAME = os.getenv("GANTRY_APP_NAME")
 GANTRY_KEY = os.getenv("GANTRY_API_KEY")
 MAPBOX_TOKEN = os.getenv("MAPBOX_TOKEN")
+
+examples = json.load(open("examples.json"))
 
 
 def get_plotly_graph(
@@ -128,6 +131,7 @@ with gr.Blocks() as demo:
         with gr.Row():
             # Flag button
             img_flag_button = gr.Button("Flag this output")
+        gr.Examples(examples["images"], inputs=[img_input])
     with gr.Tab("Video"):
         with gr.Row():
             video_input = gr.Video(type="filepath", label="Video")
@@ -136,14 +140,16 @@ with gr.Blocks() as demo:
                 video_coordinates = gr.Textbox(label="Coordinates")
                 video_plot = gr.Plot()
         video_text_button = gr.Button("Go locate!")
+        gr.Examples(examples["videos"], inputs=[video_input])
     with gr.Tab("YouTube Link"):
         with gr.Row():
-            url_input = gr.Textbox(label="YouTube video link")
+            url_input = gr.Textbox(label="Link")
             with gr.Column():
                 url_text_output = gr.Textbox(label="Location")
                 url_coordinates = gr.Textbox(label="Coordinates")
                 url_plot = gr.Plot()
         url_text_button = gr.Button("Go locate!")
+        gr.Examples(examples["video_urls"], inputs=[url_input])
 
     # Gantry flagging for image #
     callback = GantryImageToTextLogger(application=GANTRY_APP_NAME, api_key=GANTRY_KEY)
@@ -176,8 +182,6 @@ with gr.Blocks() as demo:
         inputs=url_input,
         outputs=[url_text_output, url_coordinates, url_plot],
     )
-
-    examples = gr.Examples(".", inputs=[img_input, video_input, url_input])
 
     gr.Markdown(
         "Check out the [GitHub repository](https://github.com/samhita-alla/geolocator) that this demo is based off of."
