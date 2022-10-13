@@ -143,7 +143,7 @@ with gr.Blocks() as demo:
         gr.Examples(examples["videos"], inputs=[video_input])
     with gr.Tab("YouTube Link"):
         with gr.Row():
-            url_input = gr.Textbox(label="YouTube video link")
+            url_input = gr.Textbox(label="Link")
             with gr.Column():
                 url_text_output = gr.Textbox(label="Location")
                 url_coordinates = gr.Textbox(label="Coordinates")
