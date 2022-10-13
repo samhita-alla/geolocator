@@ -2,13 +2,13 @@
     "images": ["data/test/greece.jpg"],
     "videos": [
         "data/test/newyork.mp4",
-        "data/test/lawrenceofarabia.mp4",
-        "data/test/3idiots-india.mp4",
         "data/test/faultinourstars-amsterdam.mp4",
         "data/test/lostintranslation-tokyo.mp4",
         "data/test/vicky-spain.mp4"
     ],
     "video_urls": [
-        "https://www.youtube.com/watch?v=wxeQkJTZrsw"
+        "https://www.youtube.com/watch?v=wxeQkJTZrsw",
+        "https://www.youtube.com/watch?v=Mvdr-epa1hc",
+        "https://www.youtube.com/watch?v=Lk8r0Ig62zU"
     ]
 }

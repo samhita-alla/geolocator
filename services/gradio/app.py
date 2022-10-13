@@ -10,10 +10,11 @@ import plotly
 import plotly.express as px
 import requests
 from dotenv import load_dotenv
-from gantry_callback.gantry_util import GantryImageToTextLogger
-from gantry_callback.s3_util import make_unique_bucket_name
 
 sys.path.append("..")
+
+from gantry_callback.gantry_util import GantryImageToTextLogger  # noqa: E402
+from gantry_callback.s3_util import make_unique_bucket_name  # noqa: E402
 
 load_dotenv()
 
