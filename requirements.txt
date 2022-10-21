@@ -6,6 +6,8 @@
 #
 absl-py==1.2.0
     # via tensorboard
+aiofiles==22.1.0
+    # via sanic
 aiohttp==3.8.3
     # via
     #   bentoml
@@ -137,6 +139,8 @@ h11==0.12.0
     #   uvicorn
 httpcore==0.15.0
     # via httpx
+httptools==0.5.0
+    # via sanic
 httpx==0.23.0
     # via gradio
 humanfriendly==10.0
@@ -192,6 +196,7 @@ msgpack==1.0.4
 multidict==6.0.2
     # via
     #   aiohttp
+    #   sanic
     #   yarl
 networkx==2.8.7
     # via scikit-image
@@ -383,6 +388,10 @@ rsa==4.9
     # via google-auth
 s2sphere==0.2.5
     # via -r requirements.in
+sanic==22.6.2
+    # via -r requirements.in
+sanic-routing==22.3.0
+    # via sanic
 schema==0.7.5
     # via bentoml
 scikit-image==0.19.3
@@ -463,12 +472,16 @@ typing-extensions==4.4.0
     #   torchvision
 uc-micro-py==1.0.1
     # via linkify-it-py
+ujson==5.5.0
+    # via sanic
 urllib3==1.26.12
     # via requests
 uvicorn==0.18.3
     # via
     #   bentoml
     #   gradio
+uvloop==0.17.0
+    # via sanic
 virtualenv==20.16.5
     # via pre-commit
 watchfiles==0.17.0
@@ -476,7 +489,9 @@ watchfiles==0.17.0
 websocket-client==1.4.1
     # via docker
 websockets==10.3
-    # via gradio
+    # via
+    #   gradio
+    #   sanic
 werkzeug==2.2.2
     # via tensorboard
 wheel==0.37.1

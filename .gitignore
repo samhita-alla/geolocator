@@ -3,3 +3,5 @@ GeoEstimation/
 *.sh
 __pycache__/
 .env
+services/banana/geolocator.onnx
+.DS_Store/
