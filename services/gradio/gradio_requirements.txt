@@ -18,6 +18,8 @@ attrs==22.1.0
     # via aiohttp
 backoff==1.11.1
     # via gantry
+banana-dev==4.0.0
+    # via -r gradio_requirements.in
 bcrypt==4.0.1
     # via paramiko
 boto3==1.24.89
@@ -34,8 +36,9 @@ botocore==1.27.89
     #   s3transfer
 cachetools==4.2.4
     # via gantry
-certifi==2022.9.24
+certifi==2021.10.8
     # via
+    #   banana-dev
     #   httpcore
     #   httpx
     #   requests
@@ -43,9 +46,10 @@ cffi==1.15.1
     # via
     #   cryptography
     #   pynacl
-charset-normalizer==2.1.1
+charset-normalizer==2.0.7
     # via
     #   aiohttp
+    #   banana-dev
     #   requests
 click==8.1.3
     # via
@@ -93,9 +97,10 @@ httpcore==0.15.0
     # via httpx
 httpx==0.23.0
     # via gradio
-idna==3.4
+idna==3.3
     # via
     #   anyio
+    #   banana-dev
     #   requests
     #   rfc3986
     #   yarl
@@ -202,9 +207,10 @@ pyyaml==6.0
     #   gradio
 regex==2022.3.2
     # via dateparser
-requests==2.28.1
+requests==2.26.0
     # via
     #   -r gradio_requirements.in
+    #   banana-dev
     #   gantry
     #   gradio
 rfc3986[idna2008]==1.5.0
@@ -250,8 +256,9 @@ tzlocal==4.2
     # via dateparser
 uc-micro-py==1.0.1
     # via linkify-it-py
-urllib3==1.26.12
+urllib3==1.26.7
     # via
+    #   banana-dev
     #   botocore
     #   requests
 uvicorn==0.18.3

@@ -14,8 +14,8 @@ video_file_name = "../gradio/data/test/videos/newyork.mp4"
 
 def generate_predictions(args):
     url = args.url
-    # generate_image_prediction(url)
-    # generate_video_prediction(url)
+    generate_image_prediction(url)
+    generate_video_prediction(url)
     generate_url_prediction(url)
 
 
@@ -25,7 +25,7 @@ def generate_image_prediction(url):
 
     print(
         requests.post(
-            f"{url}predict-image",
+            url,
             json={
                 "image": base64.b64encode(image_bytes.getvalue()).decode("utf-8"),
                 "filename": os.path.basename(image_file_name),
@@ -40,7 +40,7 @@ def generate_video_prediction(url):
 
     print(
         requests.post(
-            f"{url}predict-video",
+            url,
             json={
                 "video": base64.b64encode(video_bytes.getvalue()).decode("utf-8"),
                 "filename": os.path.basename(video_file_name),
@@ -52,7 +52,7 @@ def generate_video_prediction(url):
 def generate_url_prediction(url):
     print(
         requests.post(
-            f"{url}predict-url",
+            url,
             headers={"content-type": "text/plain"},
             json={"url": "https://www.youtube.com/watch?v=ADt1LnbL2HI"},
         ).text

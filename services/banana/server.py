@@ -29,39 +29,35 @@ def healthcheck(request):
     return response.json({"state": "healthy", "gpu": gpu})
 
 
-@server.route("/predict-image", methods=["POST"])
-def inference_image(request):
+@server.route("/", methods=["POST"])
+def inference(request):
     try:
         model_inputs = response.json.loads(request.json)
     except Exception:
         model_inputs = request.json
 
+    if "image" in model_inputs:
+        return inference_image(model_inputs)
+    elif "video" in model_inputs:
+        return inference_video(model_inputs)
+    elif "url" in model_inputs:
+        return inference_url(model_inputs)
+    else:
+        return response.json({"msg": "no inference"})
+
+
+def inference_image(model_inputs):
     output = user_src.inference_image(model_inputs)
-
     return response.json(output)
 
 
-@server.route("/predict-video", methods=["POST"])
-def inference_video(request):
-    try:
-        model_inputs = response.json.loads(request.json)
-    except Exception:
-        model_inputs = request.json
-
+def inference_video(model_inputs):
     output = user_src.inference_video(model_inputs)
-
     return response.json(output)
 
 
-@server.route("/predict-url", methods=["POST"])
-def inference_url(request):
-    try:
-        model_inputs = response.json.loads(request.json)
-    except Exception:
-        model_inputs = request.json
-
+def inference_url(model_inputs):
     output = user_src.inference_url(model_inputs)
-
     return response.json(output)
 
 
