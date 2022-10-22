@@ -14,7 +14,6 @@ RUN apt-get update && apt-get install -y git wget gfortran libsm6 libblas-dev li
 RUN pip3 install --upgrade pip
 ADD services/banana/banana_requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt
-RUN pip3 install onnxruntime-gpu
 
 # Clone model
 RUN git clone https://github.com/samhita-alla/GeoEstimation.git
