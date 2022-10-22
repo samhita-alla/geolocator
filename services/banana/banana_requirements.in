@@ -14,3 +14,4 @@ opentelemetry-semantic-conventions==0.33b0
 Pillow
 sanic==22.6.2
 banana-dev
+matplotlib

@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y git wget gfortran libsm6 libblas-dev li
 
 # Install python packages
 RUN pip3 install --upgrade pip
-ADD requirements.txt requirements.txt
+ADD services/banana/banana_requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt
 RUN pip3 install onnxruntime-gpu
 
