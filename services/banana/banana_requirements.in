@@ -1,0 +1,16 @@
+git+https://github.com/samhita-alla/katna.git#egg=katna
+youtube_dl
+pandas
+pytorch-lightning
+s2sphere
+scikit-learn
+onnx
+torchvision
+msgpack
+plotly
+geopy
+opentelemetry-sdk==1.12.0
+opentelemetry-semantic-conventions==0.33b0
+Pillow
+sanic==22.6.2
+banana-dev
