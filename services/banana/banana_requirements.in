@@ -5,6 +5,7 @@ pytorch-lightning
 s2sphere
 scikit-learn
 onnx
+onnxruntime
 torchvision
 msgpack
 plotly

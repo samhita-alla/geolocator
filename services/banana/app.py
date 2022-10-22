@@ -261,11 +261,7 @@ def init():
 
     model = onnxruntime.InferenceSession(
         "geolocator.onnx",
-        providers=[
-            ("CUDAExecutionProvider", {"device_id": 0})
-            if device == 0
-            else "CPUExecutionProvider"
-        ],
+        providers=["CUDAExecutionProvider" if device == 0 else "CPUExecutionProvider"],
     )
 
 
