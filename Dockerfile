@@ -20,8 +20,9 @@ RUN pip3 install onnxruntime-gpu
 RUN git clone https://github.com/samhita-alla/GeoEstimation.git
 
 ADD services/banana/server.py GeoEstimation/
-
 ADD services/banana/app.py GeoEstimation/
+ADD app/post_processing.py GeoEstimation/
+ADD app/pre_processing.py GeoEstimation/
 
 WORKDIR /GeoEstimation
 

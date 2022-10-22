@@ -1,14 +1,19 @@
+import base64
 import json
-import mimetypes
+
+# import mimetypes
 import os
 import sys
+from io import BytesIO
 from typing import Dict, Tuple, Union
 
+import banana_dev as banana
 import gradio as gr
 import pandas as pd
 import plotly
 import plotly.express as px
-import requests
+
+# import requests
 from dotenv import load_dotenv
 
 sys.path.append("..")
@@ -22,6 +27,8 @@ URL = os.getenv("ENDPOINT")
 GANTRY_APP_NAME = os.getenv("GANTRY_APP_NAME")
 GANTRY_KEY = os.getenv("GANTRY_API_KEY")
 MAPBOX_TOKEN = os.getenv("MAPBOX_TOKEN")
+BANANA_API_KEY = os.getenv("BANANA_API_KEY")
+BANANA_MODEL_KEY = os.getenv("BANANA_MODEL_KEY")
 
 examples = json.load(open("examples.json"))
 
@@ -70,47 +77,72 @@ def get_outputs(
 
 
 def image_gradio(img_file: str) -> Tuple[str, str, plotly.graph_objects.Figure]:
-    data = json.loads(
-        requests.post(
-            f"{URL}predict-image",
-            files={
-                "image": (
-                    img_file,
-                    open(img_file, "rb"),
-                    mimetypes.guess_type(img_file)[0],
-                )
-            },
-        ).text
-    )
+    # data = json.loads(
+    #     requests.post(
+    #         f"{URL}predict-image",
+    #         files={
+    #             "image": (
+    #                 img_file,
+    #                 open(img_file, "rb"),
+    #                 mimetypes.guess_type(img_file)[0],
+    #             )
+    #         },
+    #     ).text
+    # )
+    with open(img_file, "rb") as image_file:
+        image_bytes = BytesIO(image_file.read())
+
+    data = banana.run(
+        BANANA_API_KEY,
+        BANANA_MODEL_KEY,
+        {
+            "image": base64.b64encode(image_bytes.getvalue()).decode("utf-8"),
+            "filename": os.path.basename(image_file),
+        },
+    )["modelOutputs"][0]
 
     return get_outputs(data=data)
 
 
 def video_gradio(video_file: str) -> Tuple[str, str, plotly.graph_objects.Figure]:
-    data = json.loads(
-        requests.post(
-            f"{URL}predict-video",
-            files={
-                "video": (
-                    video_file,
-                    open(video_file, "rb"),
-                    "application/octet-stream",
-                )
-            },
-        ).text
-    )
+    # data = json.loads(
+    #     requests.post(
+    #         f"{URL}predict-video",
+    #         files={
+    #             "video": (
+    #                 video_file,
+    #                 open(video_file, "rb"),
+    #                 "application/octet-stream",
+    #             )
+    #         },
+    #     ).text
+    # )
+    with open(video_file, "rb") as video_file:
+        video_bytes = BytesIO(video_file.read())
+
+    data = banana.run(
+        BANANA_API_KEY,
+        BANANA_MODEL_KEY,
+        {
+            "video": base64.b64encode(video_bytes.getvalue()).decode("utf-8"),
+            "filename": os.path.basename(video_file),
+        },
+    )["modelOutputs"][0]
 
     return get_outputs(data=data)
 
 
 def url_gradio(url: str) -> Tuple[str, str, plotly.graph_objects.Figure]:
-    data = json.loads(
-        requests.post(
-            f"{URL}predict-url",
-            headers={"content-type": "text/plain"},
-            data=url,
-        ).text
-    )
+    # data = json.loads(
+    #     requests.post(
+    #         f"{URL}predict-url",
+    #         headers={"content-type": "text/plain"},
+    #         data=url,
+    #     ).text
+    # )
+    data = banana.run(BANANA_API_KEY, BANANA_MODEL_KEY, {"url": url},)[
+        "modelOutputs"
+    ][0]
 
     return get_outputs(data=data)
 

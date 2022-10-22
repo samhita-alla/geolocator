@@ -52,3 +52,9 @@ def generate_url_prediction():
             api_key, model_key, {"url": "https://www.youtube.com/watch?v=ADt1LnbL2HI"}
         )
     )
+
+
+if __name__ == "__main__":
+    generate_image_prediction()
+    generate_video_prediction()
+    generate_url_prediction()
