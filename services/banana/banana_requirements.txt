@@ -275,6 +275,7 @@ youtube-dl==2021.12.17
     # via -r banana_requirements.in
 zipp==3.9.0
     # via importlib-metadata
+onnxruntime-gpu
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
