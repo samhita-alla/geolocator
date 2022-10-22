@@ -8,7 +8,7 @@ FROM pytorch/pytorch:1.11.0-cuda11.3-cudnn8-runtime
 WORKDIR /
 
 # Install git & wget
-RUN apt-get update && apt-get install -y git wget
+RUN apt-get update && apt-get install -y git wget gfortran libsm6 libblas-dev liblapack-dev ffmpeg youtube-dl
 
 # Install python packages
 RUN pip3 install --upgrade pip
