@@ -21,7 +21,7 @@ We built GeoLocator by utilizing some of the best-in-class tools.
 - **Plotly** to plot maps
 - **ONNX** to serialize the model
 - **ONNXRuntime** to generate predictions
-- **BentoML** to prep the model for serving
+- **BentoML** to prep the model for serving / **Banana** for GPU inference
 - **Gradio** to build the user-facing side of the application
 - **Gantry** to monitor the application/model
 
@@ -99,3 +99,10 @@ Gradio code can be found under the [services/gradio](services/gradio/) directory
 Code for Gantry flagging can be found under the [services/gantry_callback](services/gantry_callback/) directory.
 
 > Gantry monitoring is currently implemented to flag the outputs of images only.
+
+## 🍌 Banana
+
+[Banana](https://www.banana.dev/) provides inference hosting for ML models on serverless GPUs.
+The code is enclosed in the [services/banana](services/banana/) directory.
+
+This repository is connected to banana, so `git push` triggers the build.
