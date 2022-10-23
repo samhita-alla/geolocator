@@ -10,7 +10,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends python3-dev ca-
 WORKDIR /
 
 # Install git & wget
-RUN apt-get update && apt-get install -y git wget gfortran libsm6 libblas-dev liblapack-dev ffmpeg youtube-dl
+RUN apt-get update && apt-get install -y git wget gfortran libsm6 libblas-dev liblapack-dev ffmpeg python3-pip && \
+    sudo curl -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl && \
+    sudo chmod a+rx /usr/local/bin/youtube-dl
 
 # Install python packages
 RUN pip3 install --upgrade pip

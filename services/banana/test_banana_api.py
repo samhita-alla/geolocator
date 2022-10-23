@@ -1,5 +1,6 @@
 import base64
 import os
+import time
 from io import BytesIO
 
 import banana_dev as banana
@@ -55,6 +56,8 @@ def generate_url_prediction():
 
 
 if __name__ == "__main__":
+    start_time = time.time()
     generate_image_prediction()
     generate_video_prediction()
     generate_url_prediction()
+    print(f"End time: {time.time() - start_time}")
