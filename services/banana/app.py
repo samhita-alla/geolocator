@@ -266,8 +266,6 @@ def init():
 
 
 def inference_image(model_inputs: dict) -> dict:
-    global model
-
     # Parse out your arguments
     image = model_inputs.get("image", None)
     if image is None:
@@ -279,8 +277,6 @@ def inference_image(model_inputs: dict) -> dict:
 
 
 def inference_video(model_inputs: dict) -> dict:
-    global model
-
     # Parse out your arguments
     video = model_inputs.get("video", None)
     if video is None:
@@ -292,8 +288,6 @@ def inference_video(model_inputs: dict) -> dict:
 
 
 def inference_url(model_inputs: dict) -> dict:
-    global model
-
     # Parse out your arguments
     url = model_inputs.get("url", None)
     if url is None:
