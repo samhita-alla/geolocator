@@ -10,9 +10,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends python3-dev ca-
 WORKDIR /
 
 # Install git & wget
-RUN apt-get update && apt-get install -y git wget gfortran libsm6 libblas-dev liblapack-dev ffmpeg python3-pip && \
-    sudo curl -L https://yt-dl.org/downloads/latest/youtube-dl -o /usr/local/bin/youtube-dl && \
-    sudo chmod a+rx /usr/local/bin/youtube-dl
+RUN apt-get update && apt-get install -y git wget gfortran libsm6 libblas-dev liblapack-dev ffmpeg python3-pip sudo && \
+    wget http://ftp.de.debian.org/debian/pool/main/y/youtube-dl/youtube-dl_2021.02.04.1-1_all.deb
+    sudo apt-get install ./youtube-dl_2021.02.04.1-1_all.deb
+
+RUN useradd -m docker && echo "docker:docker" | chpasswd && adduser docker sudo
+USER docker
 
 # Install python packages
 RUN pip3 install --upgrade pip

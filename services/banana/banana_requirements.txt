@@ -1,5 +1,4 @@
 git+https://github.com/samhita-alla/katna.git#egg=katna
-youtube-dl
 pandas
 pytorch-lightning
 s2sphere
