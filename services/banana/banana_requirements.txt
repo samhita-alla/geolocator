@@ -14,4 +14,4 @@ Pillow
 sanic==22.6.2
 banana-dev
 matplotlib
-onnxruntime-gpu
+onnxruntime-gpu==1.12
