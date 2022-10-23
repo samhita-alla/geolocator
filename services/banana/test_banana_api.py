@@ -55,6 +55,6 @@ def generate_url_prediction():
 
 
 if __name__ == "__main__":
-    generate_image_prediction()
+    # generate_image_prediction()
     generate_video_prediction()
-    generate_url_prediction()
+    # generate_url_prediction()

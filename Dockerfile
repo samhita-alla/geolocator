@@ -4,7 +4,9 @@
 
 # Must use a Cuda version 11+
 FROM nvcr.io/nvidia/cuda:11.4.2-cudnn8-devel-ubuntu20.04
-
+ENV DEBIAN_FRONTEND=noninteractive
+ENV PATH /usr/local/nvidia/bin:/usr/local/cuda/bin:${PATH}
+RUN apt-get update && apt-get install -y --no-install-recommends python3-dev ca-certificates g++ python3-numpy gcc make git python3-setuptools python3-wheel python3-pip aria2 && aria2c -q -d /tmp -o cmake-3.21.0-linux-x86_64.tar.gz https://github.com/Kitware/CMake/releases/download/v3.21.0/cmake-3.21.0-linux-x86_64.tar.gz && tar -zxf /tmp/cmake-3.21.0-linux-x86_64.tar.gz --strip=1 -C /usr
 WORKDIR /
 
 # Install git & wget
