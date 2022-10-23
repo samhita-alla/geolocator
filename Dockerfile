@@ -11,7 +11,7 @@ WORKDIR /
 
 # Install git & wget
 RUN apt-get update && apt-get install -y git wget gfortran libsm6 libblas-dev liblapack-dev ffmpeg python3-pip sudo && \
-    wget http://ftp.de.debian.org/debian/pool/main/y/youtube-dl/youtube-dl_2021.02.04.1-1_all.deb && \
+    wget http://ftp.de.debian.org/debian/pool/main/y/youtube-dl/youtube-dl_2021.12.17-1_all.deb && \
     apt-get install ./youtube-dl_2021.02.04.1-1_all.deb
 
 RUN useradd -m docker && echo "docker:docker" | chpasswd && adduser docker sudo
