@@ -1,12 +1,9 @@
 from __future__ import unicode_literals
 
-import os
 from typing import Any, Dict, Tuple
 
 import youtube_dl
 from Katna.config import Video as VideoConfig
-from Katna.video import Video
-from Katna.writer import KeyFrameDiskWriter
 
 NUMBER_OF_FRAMES = 20
 MAX_FILESIZE = 10000000
@@ -67,20 +64,3 @@ def extract_youtube_video(url: str) -> Tuple[str, Dict[str, Any]]:
         saved_location = f"videos/{info_dict['id']}.{extension}"
 
     return saved_location, info_dict
-
-
-def capture_frames(video_file_path: str, info_dict: Dict[str, Any]) -> str:
-    # create a directory to store video frames
-    frames_directory = f"{SELECTED_FRAMES_DIRECTORY}/{info_dict['id']}"
-    os.makedirs(frames_directory, exist_ok=True)
-    diskwriter = KeyFrameDiskWriter(location=frames_directory)
-
-    vd = Video()
-    try:
-        vd.extract_video_keyframes(
-            no_of_frames=NUMBER_OF_FRAMES, file_path=video_file_path, writer=diskwriter
-        )
-    except Exception as e:
-        raise ValueError(f"Error capturing the frames: {e}")
-
-    return frames_directory

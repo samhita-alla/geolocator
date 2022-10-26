@@ -1,4 +1,4 @@
-katna
+git+https://github.com/samhita-alla/katna.git#egg=katna
 youtube_dl
 pytorch-lightning
 s2sphere
@@ -18,3 +18,4 @@ bentoctl
 pre-commit
 pydantic
 sanic==22.6.2
+smart_open

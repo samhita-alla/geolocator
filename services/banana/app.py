@@ -3,23 +3,28 @@ import glob
 import io
 import os
 import shutil
+import subprocess
 import sys
 import uuid
 from pathlib import Path
 from typing import Any, Dict, List, Tuple, Union
 
+import boto3
 import onnxruntime
 import pandas as pd
 import PIL.Image
 import torch
 import torchvision
+from dotenv import load_dotenv
 from tqdm.auto import tqdm
 
 sys.path.append("../../app/")
 
 from classification.train_base import MultiPartitioningClassifier  # noqa: E402
 from post_processing import generate_prediction_logit  # noqa: E402
-from pre_processing import capture_frames, extract_youtube_video  # noqa: E402
+from pre_processing import extract_youtube_video  # noqa: E402
+
+load_dotenv()
 
 IMAGE_PARENT_DIR = "geolocator-images"
 VERSION = "latest"
@@ -121,19 +126,42 @@ def img_processor(img_data: str, filename: str) -> str:
 
 
 def video_helper(video_file: str, info_dict: Dict[str, Any]) -> str:
-    frames_directory = capture_frames(video_file_path=video_file, info_dict=info_dict)
+    frames_directory = f"{SELECTED_FRAMES_DIRECTORY}/{info_dict['id'].split('.')[0]}"
+    subprocess.run(
+        [
+            "python",
+            "capture_video_frames.py",
+            "--video",
+            video_file,
+            "--dir",
+            frames_directory,
+        ],
+    )
     return frames_directory
 
 
-def video_processor(video_data: str, filename: str) -> str:
+def download_object(bucket, remote_file, local_file):
+    s3_client = boto3.client("s3")
+    s3_client.download_file(bucket, remote_file, local_file)
+
+
+def parse_s3_uri(s3_uri: str) -> Tuple[str, str]:
+    sub_part = s3_uri.replace("s3://", "").split("/")
+    bucket = sub_part.pop(0)
+    key = "/".join(sub_part)
+
+    return bucket, key
+
+
+def video_processor(video_file: str, filename: str) -> str:
     os.makedirs(VIDEOS_DIRECTORY, exist_ok=True)
 
     unique_string = str(uuid.uuid4())
     video_file_name = f"{VIDEOS_DIRECTORY}/{unique_string}-{filename}"
 
-    video_bytes = io.BytesIO(base64.b64decode(video_data.encode("utf-8")))
-    with open(video_file_name, "wb") as outfile:
-        outfile.write(video_bytes.read())
+    bucket, key = parse_s3_uri(video_file)
+
+    download_object(bucket, key, video_file_name)
 
     info_dict = {"id": os.path.basename(video_file_name)}
 
@@ -159,6 +187,11 @@ classifier = MultiPartitioningClassifier(
     build_model=False,
 )
 classifier.eval()
+
+
+def delete_object(bucket, remote_file):
+    s3_client = boto3.client("s3")
+    s3_client.delete_object(Bucket=bucket, Key=remote_file)
 
 
 def predict_helper(image_dir: str, metadata: str) -> dict:
@@ -283,7 +316,12 @@ def inference_video(model_inputs: dict) -> dict:
         return {"message": "No video provided"}
     filename = model_inputs.get("filename", None)
 
-    image_dir = video_processor(video_data=video, filename=filename)
+    image_dir = video_processor(video_file=video, filename=filename)
+
+    # delete uploaded video
+    bucket, key = parse_s3_uri(video)
+    delete_object(bucket, key)
+
     return predict_helper(image_dir=image_dir, metadata="video")
 
 
