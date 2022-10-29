@@ -194,7 +194,7 @@ def delete_object(bucket, remote_file):
     s3_client.delete_object(Bucket=bucket, Key=remote_file)
 
 
-def predict_helper(image_dir: str, metadata: str) -> dict:
+def predict_helper(image_dir: str, metadata: str) -> Union[dict, None]:
     dataloader = torch.utils.data.DataLoader(
         FiveCropImageDataset(meta_csv=None, image_dir=image_dir),
         batch_size=BATCH_SIZE,
@@ -254,12 +254,9 @@ def predict_helper(image_dir: str, metadata: str) -> dict:
                 )
 
     geolocator_df = pd.DataFrame.from_records(rows)
-    geolocator_df.set_index(keys=["img_id", "p_key"], inplace=True)
 
     # get the location
-    location, latitude, longitude = generate_prediction_logit(
-        inference_df=geolocator_df
-    )
+    result = generate_prediction_logit(inference_df=geolocator_df)
 
     # clear up the image_dir and downloaded videos
     shutil.rmtree(image_dir, ignore_errors=True)
@@ -274,11 +271,7 @@ def predict_helper(image_dir: str, metadata: str) -> dict:
         for each_file in files:
             os.remove(each_file)
 
-    return {
-        "location": location,
-        "latitude": str(latitude),
-        "longitude": str(longitude),
-    }
+    return result
 
 
 ###########################
@@ -298,7 +291,7 @@ def init():
     )
 
 
-def inference_image(model_inputs: dict) -> dict:
+def inference_image(model_inputs: dict) -> Union[dict, None]:
     # Parse out your arguments
     image = model_inputs.get("image", None)
     if image is None:
@@ -309,7 +302,7 @@ def inference_image(model_inputs: dict) -> dict:
     return predict_helper(image_dir=image_dir, metadata="image")
 
 
-def inference_video(model_inputs: dict) -> dict:
+def inference_video(model_inputs: dict) -> Union[dict, None]:
     # Parse out your arguments
     video = model_inputs.get("video", None)
     if video is None:
@@ -325,7 +318,7 @@ def inference_video(model_inputs: dict) -> dict:
     return predict_helper(image_dir=image_dir, metadata="video")
 
 
-def inference_url(model_inputs: dict) -> dict:
+def inference_url(model_inputs: dict) -> Union[dict, None]:
     # Parse out your arguments
     url = model_inputs.get("url", None)
     if url is None:

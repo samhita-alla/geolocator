@@ -189,8 +189,14 @@ def predict_helper(image_dir: str, metadata: str) -> GeoLocatorPredictions:
     geolocator_df.set_index(keys=["img_id", "p_key"], inplace=True)
 
     # get the location
-    location, latitude, longitude = generate_prediction_logit(
-        inference_df=geolocator_df
+    result = generate_prediction_logit(inference_df=geolocator_df)
+
+    hierarchy_result = result["hierarchy"]
+
+    location, latitude, longitude = (
+        hierarchy_result["location"],
+        float(hierarchy_result["latitude"]),
+        float(hierarchy_result["longitude"]),
     )
 
     # clear up the image_dir and downloaded videos

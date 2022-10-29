@@ -16,9 +16,9 @@ video_file_name = "../gradio/data/test/videos/newyork.mp4"
 
 def generate_predictions(args):
     url = args.url
-    # generate_image_prediction(url)
+    generate_image_prediction(url)
     generate_video_prediction(url)
-    # generate_url_prediction(url)
+    generate_url_prediction(url)
 
 
 def generate_image_prediction(url):

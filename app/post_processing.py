@@ -91,19 +91,36 @@ def generate_prediction_logit(
     inference_df: pd.DataFrame,
 ) -> Tuple[str, float, float]:
     # get the most confident prediction (highest pred_logit)
-    best_pred = (
-        inference_df.sort_values(by=["pred_logit"], ascending=False)
-        .reset_index()
-        .loc[0]
-    )
+    best_preds = {}
+    for subdivision in ("hierarchy", "coarse", "fine"):
+        best_preds[subdivision] = (
+            inference_df.loc[inference_df["p_key"] == subdivision]
+            .sort_values(by=["pred_logit"], ascending=False)
+            .reset_index()
+            .loc[0]
+        )
 
-    latitude, longitude = best_pred["pred_lat"], best_pred["pred_lng"]
-    logging.info(f"Latitude: {latitude}, Longitutde: {longitude}")
+    result = {}
+    for subdivision, best_pred in best_preds.items():
+        latitude, longitude = best_pred["pred_lat"], best_pred["pred_lng"]
+        logging.info(
+            f"Subdivision: {subdivision}, Latitude: {latitude}, Longitutde: {longitude}"
+        )
 
-    # get location
-    try:
-        location = get_location(latitude=latitude, longitude=longitude)
-    except Exception:
-        return None, None, None
+        # get location
+        location = None
+        try:
+            location = get_location(latitude=latitude, longitude=longitude)
+        except Exception:
+            pass
 
-    return location, latitude, longitude
+        if location:
+            result[subdivision] = {
+                "latitude": str(latitude),
+                "longitude": str(longitude),
+                "location": location,
+            }
+
+    if not result:
+        return None
+    return result

@@ -84,6 +84,10 @@ fsspec==2022.8.2
     # via gradio
 gantry==0.4.13
     # via -r gradio_requirements.in
+geographiclib==1.52
+    # via geopy
+geopy==2.2.0
+    # via -r gradio_requirements.in
 gradio==3.4.1
     # via -r gradio_requirements.in
 h11==0.12.0

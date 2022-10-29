@@ -2,7 +2,6 @@ import base64
 import mimetypes
 import os
 import sys
-import time
 from io import BytesIO
 
 import banana_dev as banana
@@ -11,8 +10,8 @@ from smart_open import open as smartopen
 
 sys.path.append("..")
 
+from gantry_callback.s3_util import add_access_policy  # noqa: E402
 from gantry_callback.s3_util import (  # noqa: E402
-    add_access_policy,
     enable_bucket_versioning,
     get_or_create_bucket,
     get_uri_of,
@@ -96,8 +95,6 @@ def generate_url_prediction():
 
 
 if __name__ == "__main__":
-    start_time = time.time()
-    # generate_image_prediction()
+    generate_image_prediction()
     generate_video_prediction()
-    # generate_url_prediction()
-    print(f"End time: {time.time() - start_time}")
+    generate_url_prediction()

@@ -33,16 +33,18 @@ def generate_image_prediction(url):
 
 
 def generate_video_prediction(url):
-    requests.post(
-        f"{url}predict-video",
-        files={
-            "video": (
-                video_file_name,
-                open(video_file_name, "rb"),
-                "application/octet-stream",
-            )
-        },
-    ).text
+    print(
+        requests.post(
+            f"{url}predict-video",
+            files={
+                "video": (
+                    video_file_name,
+                    open(video_file_name, "rb"),
+                    "application/octet-stream",
+                )
+            },
+        ).text
+    )
 
 
 def generate_url_prediction(url):

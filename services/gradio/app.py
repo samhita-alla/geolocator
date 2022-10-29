@@ -8,6 +8,7 @@ from io import BytesIO
 from typing import Dict, Tuple, Union
 
 import banana_dev as banana
+import geopy.distance
 import gradio as gr
 import pandas as pd
 import plotly
@@ -33,11 +34,62 @@ BANANA_MODEL_KEY = os.getenv("BANANA_MODEL_KEY")
 examples = json.load(open("examples.json"))
 
 
+def compute_distance(map_data: Dict[str, Dict[str, Union[str, float, None]]]):
+    hierarchy_lat, hierarchy_long = (
+        map_data["hierarchy"]["latitude"],
+        map_data["hierarchy"]["longitude"],
+    )
+
+    coarse_lat, coarse_long = (
+        map_data["coarse"]["latitude"],
+        map_data["coarse"]["longitude"],
+    )
+
+    fine_lat, fine_long = (
+        map_data["fine"]["latitude"],
+        map_data["fine"]["longitude"],
+    )
+
+    hierarchy_to_coarse = geopy.distance.geodesic(
+        (hierarchy_lat, hierarchy_long), (coarse_lat, coarse_long)
+    ).miles
+
+    hierarchy_to_fine = geopy.distance.geodesic(
+        (hierarchy_lat, hierarchy_long), (fine_lat, fine_long)
+    ).miles
+
+    return hierarchy_to_coarse, hierarchy_to_fine
+
+
 def get_plotly_graph(
-    latitude: float, longitude: float, location: str
+    map_data: Dict[str, Dict[str, Union[str, float, None]]]
 ) -> plotly.graph_objects.Figure:
-    lat_long_data = [[latitude, longitude, location]]
-    map_df = pd.DataFrame(lat_long_data, columns=["latitude", "longitude", "location"])
+
+    hierarchy_to_coarse, hierarchy_to_fine = compute_distance(map_data)
+    what_to_consider = {"hierarchy"}
+    if hierarchy_to_coarse > 30:
+        what_to_consider.add("coarse")
+    if hierarchy_to_fine > 30:
+        what_to_consider.add("fine")
+
+    size_map = {"hierarchy": 3, "fine": 1, "coarse": 1}
+    lat_long_data = []
+    for subdivision, location_data in map_data.items():
+        if subdivision in what_to_consider:
+            lat_long_data.append(
+                [
+                    subdivision,
+                    float(location_data["latitude"]),
+                    float(location_data["longitude"]),
+                    location_data["location"],
+                    size_map[subdivision],
+                ]
+            )
+
+    map_df = pd.DataFrame(
+        lat_long_data,
+        columns=["subdivision", "latitude", "longitude", "location", "size"],
+    )
 
     px.set_mapbox_access_token(MAPBOX_TOKEN)
     fig = px.scatter_mapbox(
@@ -45,10 +97,18 @@ def get_plotly_graph(
         lat="latitude",
         lon="longitude",
         hover_name="location",
-        color_discrete_sequence=["fuchsia"],
-        zoom=5,
-        height=300,
+        hover_data=["latitude", "longitude", "subdivision"],
+        color="subdivision",
+        color_discrete_map={
+            "hierarchy": "fuchsia",
+            "coarse": "blue",
+            "fine": "blue",
+        },
+        zoom=3,
+        height=500,
+        size="size",
     )
+
     fig.update_layout(mapbox_style="dark")
     fig.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0})
     return fig
@@ -59,20 +119,23 @@ def gradio_error():
 
 
 def get_outputs(
-    data: Dict[str, Union[str, float, None]]
+    data: Dict[str, Dict[str, Union[str, float, None]]]
 ) -> Tuple[str, str, plotly.graph_objects.Figure]:
+    if data is None:
+        gradio_error()
+
     location, latitude, longitude = (
-        data["location"],
-        data["latitude"],
-        data["longitude"],
+        data["hierarchy"]["location"],
+        data["hierarchy"]["latitude"],
+        data["hierarchy"]["longitude"],
     )
     if location is None:
         gradio_error()
 
     return (
-        data["location"],
+        location,
         f"{latitude},{longitude}",
-        get_plotly_graph(latitude=latitude, longitude=longitude, location=location),
+        get_plotly_graph(map_data=data),
     )
 
 
@@ -92,14 +155,16 @@ def image_gradio(img_file: str) -> Tuple[str, str, plotly.graph_objects.Figure]:
     with open(img_file, "rb") as image_file:
         image_bytes = BytesIO(image_file.read())
 
-    data = banana.run(
-        BANANA_API_KEY,
-        BANANA_MODEL_KEY,
-        {
-            "image": base64.b64encode(image_bytes.getvalue()).decode("utf-8"),
-            "filename": os.path.basename(image_file),
-        },
-    )["modelOutputs"][0]
+    data = json.loads(
+        banana.run(
+            BANANA_API_KEY,
+            BANANA_MODEL_KEY,
+            {
+                "image": base64.b64encode(image_bytes.getvalue()).decode("utf-8"),
+                "filename": os.path.basename(img_file),
+            },
+        )["modelOutputs"][0]
+    )
 
     return get_outputs(data=data)
 
@@ -120,14 +185,16 @@ def video_gradio(video_file: str) -> Tuple[str, str, plotly.graph_objects.Figure
     with open(video_file, "rb") as video_file:
         video_bytes = BytesIO(video_file.read())
 
-    data = banana.run(
-        BANANA_API_KEY,
-        BANANA_MODEL_KEY,
-        {
-            "video": base64.b64encode(video_bytes.getvalue()).decode("utf-8"),
-            "filename": os.path.basename(video_file),
-        },
-    )["modelOutputs"][0]
+    data = json.loads(
+        banana.run(
+            BANANA_API_KEY,
+            BANANA_MODEL_KEY,
+            {
+                "video": base64.b64encode(video_bytes.getvalue()).decode("utf-8"),
+                "filename": os.path.basename(video_file),
+            },
+        )["modelOutputs"][0]
+    )
 
     return get_outputs(data=data)
 
@@ -140,9 +207,11 @@ def url_gradio(url: str) -> Tuple[str, str, plotly.graph_objects.Figure]:
     #         data=url,
     #     ).text
     # )
-    data = banana.run(BANANA_API_KEY, BANANA_MODEL_KEY, {"url": url},)[
-        "modelOutputs"
-    ][0]
+    data = json.loads(
+        banana.run(BANANA_API_KEY, BANANA_MODEL_KEY, {"url": url},)[
+            "modelOutputs"
+        ][0]
+    )
 
     return get_outputs(data=data)
 
