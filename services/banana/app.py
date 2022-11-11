@@ -154,19 +154,18 @@ def parse_s3_uri(s3_uri: str) -> Tuple[str, str]:
 
 
 def video_processor(video_file: str, filename: str) -> str:
-    # os.makedirs(VIDEOS_DIRECTORY, exist_ok=True)
+    os.makedirs(VIDEOS_DIRECTORY, exist_ok=True)
 
-    # unique_string = str(uuid.uuid4())
-    # video_file_name = f"{VIDEOS_DIRECTORY}/{unique_string}-{filename}"
+    unique_string = str(uuid.uuid4())
+    video_file_name = f"{VIDEOS_DIRECTORY}/{unique_string}-{filename}"
 
-    # bucket, key = parse_s3_uri(video_file)
+    bucket, key = parse_s3_uri(video_file)
 
-    # download_object(bucket, key, video_file_name)
+    download_object(bucket, key, video_file_name)
 
-    # info_dict = {"id": os.path.basename(video_file_name)}
-    info_dict = {"id": os.path.basename(video_file)}
+    info_dict = {"id": os.path.basename(video_file_name)}
 
-    return video_helper(video_file=video_file, info_dict=info_dict)
+    return video_helper(video_file=video_file_name, info_dict=info_dict)
 
 
 def url_processor(url: str) -> str:
@@ -190,9 +189,9 @@ classifier = MultiPartitioningClassifier(
 classifier.eval()
 
 
-# def delete_object(bucket, remote_file):
-#     s3_client = boto3.client("s3")
-#     s3_client.delete_object(Bucket=bucket, Key=remote_file)
+def delete_object(bucket, remote_file):
+    s3_client = boto3.client("s3")
+    s3_client.delete_object(Bucket=bucket, Key=remote_file)
 
 
 def predict_helper(image_dir: str, metadata: str) -> Union[dict, None]:
@@ -313,8 +312,8 @@ def inference_video(model_inputs: dict) -> Union[dict, None]:
     image_dir = video_processor(video_file=video, filename=filename)
 
     # delete uploaded video
-    # bucket, key = parse_s3_uri(video)
-    # delete_object(bucket, key)
+    bucket, key = parse_s3_uri(video)
+    delete_object(bucket, key)
 
     return predict_helper(image_dir=image_dir, metadata="video")
 

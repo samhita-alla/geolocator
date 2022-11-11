@@ -169,32 +169,32 @@ def image_gradio(img_file: str) -> Tuple[str, str, plotly.graph_objects.Figure]:
     return get_outputs(data=data)
 
 
-def video_gradio(video_file: str) -> Tuple[str, str, plotly.graph_objects.Figure]:
-    # data = json.loads(
-    #     requests.post(
-    #         f"{URL}predict-video",
-    #         files={
-    #             "video": (
-    #                 video_file,
-    #                 open(video_file, "rb"),
-    #                 "application/octet-stream",
-    #             )
-    #         },
-    #     ).text
-    # )
+# def video_gradio(video_file: str) -> Tuple[str, str, plotly.graph_objects.Figure]:
+#     # data = json.loads(
+#     #     requests.post(
+#     #         f"{URL}predict-video",
+#     #         files={
+#     #             "video": (
+#     #                 video_file,
+#     #                 open(video_file, "rb"),
+#     #                 "application/octet-stream",
+#     #             )
+#     #         },
+#     #     ).text
+#     # )
 
-    data = json.loads(
-        banana.run(
-            BANANA_API_KEY,
-            BANANA_MODEL_KEY,
-            {
-                "video": video_file,
-                "filename": os.path.basename(video_file),
-            },
-        )["modelOutputs"][0]
-    )
+#     data = json.loads(
+#         banana.run(
+#             BANANA_API_KEY,
+#             BANANA_MODEL_KEY,
+#             {
+#                 "video": video_file,
+#                 "filename": os.path.basename(video_file),
+#             },
+#         )["modelOutputs"][0]
+#     )
 
-    return get_outputs(data=data)
+#     return get_outputs(data=data)
 
 
 def url_gradio(url: str) -> Tuple[str, str, plotly.graph_objects.Figure]:
@@ -217,7 +217,7 @@ def url_gradio(url: str) -> Tuple[str, str, plotly.graph_objects.Figure]:
 with gr.Blocks() as demo:
     gr.Markdown("# GeoLocator")
     gr.Markdown(
-        "### An app that guesses the location of an image 🌌, a video 📹 or a YouTube link 🔗."
+        "### An app that guesses the location of an image 🌌 or a YouTube link 🔗."
     )
     with gr.Tab("Image"):
         with gr.Row():
@@ -231,15 +231,15 @@ with gr.Blocks() as demo:
             # Flag button
             img_flag_button = gr.Button("Flag this output")
         gr.Examples(examples["images"], inputs=[img_input])
-    with gr.Tab("Video"):
-        with gr.Row():
-            video_input = gr.Video(type="filepath", label="Video")
-            with gr.Column():
-                video_text_output = gr.Textbox(label="Location")
-                video_coordinates = gr.Textbox(label="Coordinates")
-                video_plot = gr.Plot()
-        video_text_button = gr.Button("Go locate!")
-        gr.Examples(examples["videos"], inputs=[video_input])
+    # with gr.Tab("Video"):
+    #     with gr.Row():
+    #         video_input = gr.Video(type="filepath", label="Video")
+    #         with gr.Column():
+    #             video_text_output = gr.Textbox(label="Location")
+    #             video_coordinates = gr.Textbox(label="Coordinates")
+    #             video_plot = gr.Plot()
+    #     video_text_button = gr.Button("Go locate!")
+    #     gr.Examples(examples["videos"], inputs=[video_input])
     with gr.Tab("YouTube Link"):
         with gr.Row():
             url_input = gr.Textbox(label="Link")
@@ -271,11 +271,11 @@ with gr.Blocks() as demo:
         inputs=img_input,
         outputs=[img_text_output, img_coordinates, img_plot],
     )
-    video_text_button.click(
-        video_gradio,
-        inputs=video_input,
-        outputs=[video_text_output, video_coordinates, video_plot],
-    )
+    # video_text_button.click(
+    #     video_gradio,
+    #     inputs=video_input,
+    #     outputs=[video_text_output, video_coordinates, video_plot],
+    # )
     url_text_button.click(
         url_gradio,
         inputs=url_input,
