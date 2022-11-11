@@ -1,5 +1,6 @@
 import base64
 import json
+import mimetypes
 
 # import mimetypes
 import os
@@ -16,11 +17,20 @@ import plotly.express as px
 
 # import requests
 from dotenv import load_dotenv
+from smart_open import open as smartopen
 
 sys.path.append("..")
 
 from gantry_callback.gantry_util import GantryImageToTextLogger  # noqa: E402
-from gantry_callback.s3_util import make_unique_bucket_name  # noqa: E402
+from gantry_callback.s3_util import add_access_policy  # noqa: E402
+from gantry_callback.s3_util import (  # noqa: E402
+    enable_bucket_versioning,
+    get_or_create_bucket,
+    get_uri_of,
+    make_key,
+    make_unique_bucket_name,
+)
+from gantry_callback.string_img_util import read_b64_string  # noqa: E402
 
 load_dotenv()
 
@@ -169,32 +179,60 @@ def image_gradio(img_file: str) -> Tuple[str, str, plotly.graph_objects.Figure]:
     return get_outputs(data=data)
 
 
-# def video_gradio(video_file: str) -> Tuple[str, str, plotly.graph_objects.Figure]:
-#     # data = json.loads(
-#     #     requests.post(
-#     #         f"{URL}predict-video",
-#     #         files={
-#     #             "video": (
-#     #                 video_file,
-#     #                 open(video_file, "rb"),
-#     #                 "application/octet-stream",
-#     #             )
-#     #         },
-#     #     ).text
-#     # )
+def _upload_video_to_s3(video_b64_string):
+    bucket = get_or_create_bucket(
+        make_unique_bucket_name(prefix="geolocator-app", seed="420")
+    )
+    enable_bucket_versioning(bucket)
+    add_access_policy(bucket)
 
-#     data = json.loads(
-#         banana.run(
-#             BANANA_API_KEY,
-#             BANANA_MODEL_KEY,
-#             {
-#                 "video": video_file,
-#                 "filename": os.path.basename(video_file),
-#             },
-#         )["modelOutputs"][0]
-#     )
+    data_type, video_buffer = read_b64_string(video_b64_string, return_data_type=True)
+    video_bytes = video_buffer.read()
+    key = make_key(video_bytes, filetype=data_type)
 
-#     return get_outputs(data=data)
+    s3_uri = get_uri_of(bucket, key)
+
+    with smartopen(s3_uri, "wb") as s3_object:
+        s3_object.write(video_bytes)
+
+    return s3_uri
+
+
+def video_gradio(video_file: str) -> Tuple[str, str, plotly.graph_objects.Figure]:
+    # data = json.loads(
+    #     requests.post(
+    #         f"{URL}predict-video",
+    #         files={
+    #             "video": (
+    #                 video_file,
+    #                 open(video_file, "rb"),
+    #                 "application/octet-stream",
+    #             )
+    #         },
+    #     ).text
+    # )
+
+    with open(video_file, "rb") as video_file:
+        video_b64_string = base64.b64encode(
+            BytesIO(video_file.read()).getvalue()
+        ).decode("utf8")
+
+    video_mime = mimetypes.guess_type(video_file)[0]
+
+    s3_uri = _upload_video_to_s3(f"data:{video_mime};base64," + video_b64_string)
+
+    data = json.loads(
+        banana.run(
+            BANANA_API_KEY,
+            BANANA_MODEL_KEY,
+            {
+                "video": s3_uri,
+                "filename": os.path.basename(video_file),
+            },
+        )["modelOutputs"][0]
+    )
+
+    return get_outputs(data=data)
 
 
 def url_gradio(url: str) -> Tuple[str, str, plotly.graph_objects.Figure]:

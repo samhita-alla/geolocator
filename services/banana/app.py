@@ -15,7 +15,8 @@ import pandas as pd
 import PIL.Image
 import torch
 import torchvision
-from dotenv import load_dotenv
+
+# from dotenv import load_dotenv
 from tqdm.auto import tqdm
 
 sys.path.append("../../app/")
@@ -24,7 +25,7 @@ from classification.train_base import MultiPartitioningClassifier  # noqa: E402
 from post_processing import generate_prediction_logit  # noqa: E402
 from pre_processing import extract_youtube_video  # noqa: E402
 
-load_dotenv()
+# load_dotenv()
 
 IMAGE_PARENT_DIR = "geolocator-images"
 VERSION = "latest"

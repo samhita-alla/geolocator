@@ -16,3 +16,4 @@ matplotlib
 onnxruntime-gpu==1.12
 boto3
 smart_open
+python-dotenv
