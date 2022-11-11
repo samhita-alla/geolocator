@@ -182,15 +182,13 @@ def video_gradio(video_file: str) -> Tuple[str, str, plotly.graph_objects.Figure
     #         },
     #     ).text
     # )
-    with open(video_file, "rb") as video_file:
-        video_bytes = BytesIO(video_file.read())
 
     data = json.loads(
         banana.run(
             BANANA_API_KEY,
             BANANA_MODEL_KEY,
             {
-                "video": base64.b64encode(video_bytes.getvalue()).decode("utf-8"),
+                "video": video_file,
                 "filename": os.path.basename(video_file),
             },
         )["modelOutputs"][0]
