@@ -22,8 +22,8 @@ from smart_open import open as smartopen
 sys.path.append("..")
 
 from gantry_callback.gantry_util import GantryImageToTextLogger  # noqa: E402
-from gantry_callback.s3_util import add_access_policy  # noqa: E402
 from gantry_callback.s3_util import (  # noqa: E402
+    add_access_policy,
     enable_bucket_versioning,
     get_or_create_bucket,
     get_uri_of,
@@ -165,16 +165,14 @@ def image_gradio(img_file: str) -> Tuple[str, str, plotly.graph_objects.Figure]:
     with open(img_file, "rb") as image_file:
         image_bytes = BytesIO(image_file.read())
 
-    data = json.loads(
-        banana.run(
-            BANANA_API_KEY,
-            BANANA_MODEL_KEY,
-            {
-                "image": base64.b64encode(image_bytes.getvalue()).decode("utf-8"),
-                "filename": os.path.basename(img_file),
-            },
-        )["modelOutputs"][0]
-    )
+    data = banana.run(
+        BANANA_API_KEY,
+        BANANA_MODEL_KEY,
+        {
+            "image": base64.b64encode(image_bytes.getvalue()).decode("utf-8"),
+            "filename": os.path.basename(img_file),
+        },
+    )["modelOutputs"][0]
 
     return get_outputs(data=data)
 
@@ -221,16 +219,14 @@ def video_gradio(video_file: str) -> Tuple[str, str, plotly.graph_objects.Figure
 
     s3_uri = _upload_video_to_s3(f"data:{video_mime};base64," + video_b64_string)
 
-    data = json.loads(
-        banana.run(
-            BANANA_API_KEY,
-            BANANA_MODEL_KEY,
-            {
-                "video": s3_uri,
-                "filename": os.path.basename(video_file),
-            },
-        )["modelOutputs"][0]
-    )
+    data = banana.run(
+        BANANA_API_KEY,
+        BANANA_MODEL_KEY,
+        {
+            "video": s3_uri,
+            "filename": os.path.basename(video_file),
+        },
+    )["modelOutputs"][0]
 
     return get_outputs(data=data)
 
@@ -243,11 +239,9 @@ def url_gradio(url: str) -> Tuple[str, str, plotly.graph_objects.Figure]:
     #         data=url,
     #     ).text
     # )
-    data = json.loads(
-        banana.run(BANANA_API_KEY, BANANA_MODEL_KEY, {"url": url},)[
-            "modelOutputs"
-        ][0]
-    )
+    data = banana.run(BANANA_API_KEY, BANANA_MODEL_KEY, {"url": url},)[
+        "modelOutputs"
+    ][0]
 
     return get_outputs(data=data)
 
@@ -255,7 +249,7 @@ def url_gradio(url: str) -> Tuple[str, str, plotly.graph_objects.Figure]:
 with gr.Blocks() as demo:
     gr.Markdown("# GeoLocator")
     gr.Markdown(
-        "### An app that guesses the location of an image 🌌 or a YouTube link 🔗."
+        "### An app that guesses the location of an image 🌌 or a YouTube video link 🔗."
     )
     with gr.Tab("Image"):
         with gr.Row():
@@ -322,6 +316,12 @@ with gr.Blocks() as demo:
 
     gr.Markdown(
         "Check out the [GitHub repository](https://github.com/samhita-alla/geolocator) that this demo is based off of."
+    )
+    gr.Markdown(
+        "#### To understand what subdivision means, refer to the [Geolocation paper](https://openaccess.thecvf.com/content_ECCV_2018/papers/Eric_Muller-Budack_Geolocation_Estimation_of_ECCV_2018_paper.pdf)."
+    )
+    gr.Markdown(
+        "#### TL;DR Fine and Coarse are spatial resolutions and Hierarchy generates predictions at fine scale but incorporates knowledge from coarse and middle partitionings."
     )
 
 demo.launch()
