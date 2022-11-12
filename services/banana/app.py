@@ -129,7 +129,7 @@ def video_helper(video_file: str, info_dict: Dict[str, Any]) -> str:
     frames_directory = f"{SELECTED_FRAMES_DIRECTORY}/{info_dict['id'].split('.')[0]}"
     subprocess.run(
         [
-            "python",
+            "python3",
             "capture_video_frames.py",
             "--video",
             video_file,
