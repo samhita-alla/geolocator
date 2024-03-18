@@ -239,7 +239,11 @@ def url_gradio(url: str) -> Tuple[str, str, plotly.graph_objects.Figure]:
     #         data=url,
     #     ).text
     # )
-    data = banana.run(BANANA_API_KEY, BANANA_MODEL_KEY, {"url": url},)[
+    data = banana.run(
+        BANANA_API_KEY,
+        BANANA_MODEL_KEY,
+        {"url": url},
+    )[
         "modelOutputs"
     ][0]
 
