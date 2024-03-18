@@ -278,6 +278,7 @@ def predict_helper(image_dir: str, metadata: str) -> Union[dict, None]:
 # HELPER FUNCTIONS END ####
 ###########################
 
+
 # Init is ran on server startup
 # Load your model to GPU as a global variable here using the variable name "model"
 def init():
