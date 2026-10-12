@@ -1,6 +1,7 @@
 """
 Tests the Bento Service API
 """
+
 import argparse
 import mimetypes
 
