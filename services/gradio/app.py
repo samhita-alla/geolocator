@@ -72,7 +72,7 @@ def compute_distance(map_data: Dict[str, Dict[str, Union[str, float, None]]]):
 
 
 def get_plotly_graph(
-    map_data: Dict[str, Dict[str, Union[str, float, None]]]
+    map_data: Dict[str, Dict[str, Union[str, float, None]]],
 ) -> plotly.graph_objects.Figure:
 
     hierarchy_to_coarse, hierarchy_to_fine = compute_distance(map_data)
@@ -129,7 +129,7 @@ def gradio_error():
 
 
 def get_outputs(
-    data: Dict[str, Dict[str, Union[str, float, None]]]
+    data: Dict[str, Dict[str, Union[str, float, None]]],
 ) -> Tuple[str, str, plotly.graph_objects.Figure]:
     if data is None:
         gradio_error()
@@ -239,7 +239,11 @@ def url_gradio(url: str) -> Tuple[str, str, plotly.graph_objects.Figure]:
     #         data=url,
     #     ).text
     # )
-    data = banana.run(BANANA_API_KEY, BANANA_MODEL_KEY, {"url": url},)[
+    data = banana.run(
+        BANANA_API_KEY,
+        BANANA_MODEL_KEY,
+        {"url": url},
+    )[
         "modelOutputs"
     ][0]
 
