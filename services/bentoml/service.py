@@ -1,6 +1,7 @@
 """
 Bento Service Definition
 """
+
 from __future__ import annotations
 
 import glob

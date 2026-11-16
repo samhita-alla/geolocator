@@ -10,8 +10,8 @@ from smart_open import open as smartopen
 
 sys.path.append("..")
 
-from gantry_callback.s3_util import add_access_policy  # noqa: E402
 from gantry_callback.s3_util import (  # noqa: E402
+    add_access_policy,
     enable_bucket_versioning,
     get_or_create_bucket,
     get_uri_of,
